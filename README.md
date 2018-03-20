@@ -1,5 +1,5 @@
 # Introduction
-This repostiry holds the source code for a project in JCE software engineering course, the project is to develop an application used to navigate through the college campus, the organization which proposed this project is called "Israeli Hope".
+This repostiry holds the source code for a project in JCE software engineering course, the project is to develop an application used to navigate through the college campus, the organization which proposed this project is called [Israeli Hope](https://www.israeli-hope.gov.il/).
 ![project logo (this one for is taken from basecamp - a project management service)](https://www.israeli-hope.gov.il/sites/all/themes/fatfish_subtheme/logo.png)
 
 ## Tools & Practices
