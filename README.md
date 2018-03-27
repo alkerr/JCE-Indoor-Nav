@@ -7,6 +7,7 @@ This repository holds the source code for a project in JCE software engineering 
 ## Tools & Practices
 We're trying to use the best tools and practices in order to produce a quality enginneered product.
 We'll be using Angular framework in order to develop the application.
+
 |Category|Status|
 |---|---|
 | Version Control System| git & github |
