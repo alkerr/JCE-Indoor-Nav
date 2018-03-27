@@ -6,12 +6,11 @@ This repository holds the source code for a project in JCE software engineering 
 
 ## Tools & Practices
 We're trying to use the best tools and practices in order to produce a quality enginneered product.
-(replace 'jce-il/project-template' with your 'username/repo' and register to the relevant services)
 
 |Category|Status|
 |---|---|
 | Version Control System| git & github |
-| Recommended IDE | [VSCode](https://code.visualstudio.com) |
+| IDE | [VSCode](https://code.visualstudio.com) |
 | Group Chat | [![Join the chat at https://gitter.im/jce-il/project-template](https://badges.gitter.im/jce-il/project-template.svg)](https://gitter.im/jce-il/project-template?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) |
 | Build Status (CI) |  [![Build Status](https://travis-ci.org/jce-il/project-template.svg?branch=master)](https://travis-ci.org/jce-il/project-template) |
 | Dependencies | [![David](https://img.shields.io/david/dev/idleberg/vscode-badges.svg?style=flat-square)](https://david-dm.org/jce-il/project-template?type=dev) |
