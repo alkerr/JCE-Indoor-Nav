@@ -1,0 +1,64 @@
+<!DOCTYPE html5>
+<html>
+	<head>
+		<title>JCE Indoor Nav</title>
+		<link rel="stylesheet" href= "menus.css"/>
+		 <script src = "menus.js"></script>
+	</head>
+	
+	<body>
+		<h1 id = "title">JCE Indoor Nav </h1>
+		
+		<div id = "main">
+			<input id = "srch"/> 
+			<button onclick="search()" class = "nav_item">חפש</button> 
+			<br>
+			<br>
+			<button onclick="myFunction()" class="dropbtn">משרדים</button>
+			<div id="offices" class="dropdown-content">
+				<a href="#">מִשׂרָד 1</a>
+				<a href="#">מִשׂרָד 2</a>
+				<a href="#">מִשׂרָד 3</a>
+			</div>
+			
+			<button onclick="classFunction()" class="dropbtn">כיתות</button>
+			<div id="classes" class="dropdown-content">
+				<a href="#">כיתה 1</a>
+				<a href="#">כיתה 2</a>
+				<a href="#">כיתה 3</a>
+			</div>
+			
+			<button onclick="otherFunction()" class="dropbtn">מקומות אחרים</button>
+			<div id="other" class="dropdown-content">
+				<a href="#">סִפְרִיָה</a>
+				<a href="#">קפיטריה</a>
+				<a href="#">חדר מנוחה</a>
+			</div>
+			<br>
+			<br>
+			<div id = "result" class = "hide">
+				<ul>
+				  <li><h3>תוֹצָאָה 1    ..............<h3><a href = "../maps/hebrewmap.html" class="nav_item">נווט</a></li>
+				  <li><h3>תוֹצָאָה 2    ..............<h3><a href = "../maps/hebrewmap.html" class="nav_item">נווט</a></li>
+				  <li><h3>תוֹצָאָה 3    ..............<h3><a href = "../maps/hebrewmap.html" class="nav_item">נווט</a></li>
+				</ul>  
+			</div>
+			
+		</div>
+		<div id = "nav">
+			<a class = "nav_item" href = "../maps/hebrewmap.html">
+				מַפָּה
+			</a>
+			
+			<a class = "nav_item">
+				תַפרִיט
+			</a>
+			<a class = "nav_item" href="../language.html">
+				שפה
+			</a>
+		</div>
+		
+		
+	</body>
+	
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html5>
+<html>
+	<head>
+		<title>JCE Indoor Nav</title>
+		<link rel="stylesheet" href= "menus.css"/>
+		 <script src = "menus.js"></script>
+	</head>
+	
+	<body>
+		<h1 id = "title">JCE Indoor Nav </h1>
+		
+		<div id = "main">
+			<input id = "srch"/> 
+			<button onclick="search()" class = "nav_item">بحث</button> 
+			<br>
+			<br>
+			<button onclick="myFunction()" class="dropbtn">مكاتب</button>
+			<div id="offices" class="dropdown-content">
+				<a href="#">مكتب 1</a>
+				<a href="#">مكتب 2</a>
+				<a href="#">مكتب 3</a>
+			</div>
+			
+			<button onclick="classFunction()" class="dropbtn">غرف دراسة</button>
+			<div id="classes" class="dropdown-content">
+				<a href="#">صف دراسي 1</a>
+				<a href="#">صف دراسي 2</a>
+				<a href="#">صف دراسي 3</a>
+			</div>
+			
+			<button onclick="otherFunction()" class="dropbtn">اماكن اخرى</button>
+			<div id="other" class="dropdown-content">
+				<a href="#">مكتبة</a>
+				<a href="#">مقهى</a>
+				<a href="#">غرفة الراحة</a>
+			</div>
+			<br>
+			<br>
+			<div id = "result" class = "hide">
+				<ul>
+				  <li><h3>نتيجة 1    ..............<h3><a href = "../maps/arabicmap.html" class="nav_item">احصل على الاتجاهات</a></li>
+				  <li><h3>نتيجة 2    ..............<h3><a href = "../maps/arabicmap.html" class="nav_item">احصل على الاتجاهات</a></li>
+				  <li><h3>نتيجة 3    ..............<h3><a href = "../maps/arabicmap.html" class="nav_item">احصل على الاتجاهات</a></li>
+				</ul>  
+			</div>
+			
+		</div>
+		<div id = "nav">
+			<a class = "nav_item" href = "../maps/arabicmap.html">
+				خريطة
+			</a>
+			
+			<a class = "nav_item">
+				قائمة
+			</a>
+			<a class = "nav_item" href="../language.html">
+				لغة
+			</a>
+		</div>
+		
+		
+	</body>
+	
+</html>

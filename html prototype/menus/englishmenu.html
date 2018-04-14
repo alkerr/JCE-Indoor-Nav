@@ -1,0 +1,64 @@
+<!DOCTYPE html5>
+<html>
+	<head>
+		<title>JCE Indoor Nav</title>
+		<link rel="stylesheet" href= "menus.css"/>
+		 <script src = "menus.js"></script>
+	</head>
+	
+	<body>
+		<h1 id = "title">JCE Indoor Nav </h1>
+		
+		<div id = "main">
+			<input id = "srch"/> 
+			<button onclick="search()" class = "nav_item">Search</button> 
+			<br>
+			<br>
+			<button onclick="myFunction()" class="dropbtn">Offices</button>
+			<div id="offices" class="dropdown-content">
+				<a href="#">Office 1</a>
+				<a href="#">Office 2</a>
+				<a href="#">Office 3</a>
+			</div>
+			
+			<button onclick="classFunction()" class="dropbtn">Classes</button>
+			<div id="classes" class="dropdown-content">
+				<a href="#">Class 1</a>
+				<a href="#">Class 2</a>
+				<a href="#">Class 3</a>
+			</div>
+			
+			<button onclick="otherFunction()" class="dropbtn">Other</button>
+			<div id="other" class="dropdown-content">
+				<a href="#">Library</a>
+				<a href="#">Coffee shop</a>
+				<a href="#">Resting Room</a>
+			</div>
+			<br>
+			<br>
+			<div id = "result" class = "hide">
+				<ul>
+				  <li><h3>Result 1    ..............<h3><a href = "../maps/englishmap.html" class="nav_item">Navigate</a></li>
+				  <li><h3>Result 2    ..............<h3><a href = "../maps/englishmap.html" class="nav_item">Navigate</a></li>
+				  <li><h3>Result 3    ..............<h3><a href = "../maps/englishmap.html" class="nav_item">Navigate</a></li>
+				</ul>  
+			</div>
+			
+		</div>
+		<div id = "nav">
+			<a class = "nav_item" href = "../maps/englishmap.html">
+				Map
+			</a>
+			
+			<a class = "nav_item">
+				Menu
+			</a>
+			<a class = "nav_item" href="../language.html">
+				Language
+			</a>
+		</div>
+		
+		
+	</body>
+	
+</html>

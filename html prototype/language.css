@@ -1,0 +1,49 @@
+
+body{
+	background-color:#cd5c5c;
+}
+
+#title{
+    position:absolute;
+    margin:0;
+    height: 20%;
+    width:95%;
+    border-radius: 10px;
+
+    text-align: center;
+}
+
+#main{
+    position:absolute;
+
+    height:60%;
+    width:95%;
+    bottom:20%;
+    text-align: center;
+}
+
+#nav{
+    position:absolute;
+    margin:0;
+    width:95%;
+    height:20%;
+    bottom: 0;
+
+    text-align: center;
+}
+
+.nav_item{
+	text-decoration:none;
+    background: red;
+    color: white;
+    padding: 12px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1.2em;
+    display:inline-block;
+    border-radius: 10px;
+    border-color: black;
+    border-style: solid;
+    border-width: 1px;
+	font-size: 30px;
+}
