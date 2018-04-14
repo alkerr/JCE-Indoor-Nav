@@ -29,7 +29,7 @@ We'll be using Angular framework in order to develop the application.
 | Project Course Status | ... |
 
 ## Please visit our [live application](https://demo.reactstarterkit.com/)
-- Alright, currently only a landing page...
+- [HTML Prototype](https://htmlpreview.github.io/?https://raw.githubusercontent.com/alkerr/JCE-Indoor-Nav/master/html%20prototype/language.html)
 
 
 ## Disclaimer
