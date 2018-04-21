@@ -1,0 +1,13 @@
+
+.left{
+    display: inline-block;
+}
+.logo{
+    display: inline-block;
+}
+.desc{
+    display: inline-block;
+}
+.navm{
+    float: right;
+}

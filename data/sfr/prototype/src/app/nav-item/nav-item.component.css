@@ -1,0 +1,10 @@
+.datapart{
+    display: inline-block;
+    cursor: pointer;
+    background: red;
+    margin: -2px;
+}
+
+.datapart:hover{
+    background: white;
+}
