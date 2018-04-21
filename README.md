@@ -37,7 +37,9 @@ This project is developed as part of the requirements for a [software engineerin
 
 Please visit our wiki for furthur project info: 
 
-### [User Manual](../../wiki/User-Manual-(TBA)) (empty for now)
+### [User Manual](https://github.com/alkerr/JCE-Indoor-Nav/wiki/User-Manual) 
+
+### [Product documentation](https://github.com/alkerr/JCE-Indoor-Nav/wiki/Product-documentation) 
 
 ### [Team Page](../../wiki/team)
 
@@ -48,8 +50,8 @@ Please visit our wiki for furthur project info:
 - [Software Design Specification](../../wiki/sds)
 
 ### Iteration Pages
-- [Iteration 0 - ZFR](../../wiki/iter0-zfr)
-- [Iteration 1 - MVP]()
+- [Iteration 0 - ZFR](https://github.com/alkerr/JCE-Indoor-Nav/wiki/ZFR---Zero-Feature-Release)
+- [Iteration 1 - MVP](https://github.com/alkerr/JCE-Indoor-Nav/wiki/MVP-Minimal-Viable-Product)
 - [Iteration 2 - Feature X]()
 - [Iteration 3 - Feature Y]()
 - [Iteration 4 - Feature Z]()
