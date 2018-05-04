@@ -9,8 +9,11 @@
 		<script>
 			var map = {a:{b:3,c:1},b:{a:2,c:1},c:{a:4,b:1}},
 			    graph = new Graph(map);
+				
+							alert("shortest path between a and b is: "+graph.findShortestPath('a', 'b'));
 
-			alert("shortest path between a and b is: "+graph.findShortestPath('a', 'b'));
+
+			console.log(graph.findShortestPath('a', 'b'));
 			console.log(graph.findShortestPath('a', 'c'));
 			console.log(graph.findShortestPath('b', 'a'));
 			console.log(graph.findShortestPath('b', 'c', 'b'));
