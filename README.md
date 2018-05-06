@@ -51,8 +51,8 @@ Please visit our wiki for furthur project info:
 
 ### Iteration Pages
 - [Iteration 0 - ZFR](https://github.com/alkerr/JCE-Indoor-Nav/wiki/ZFR---Zero-Feature-Release)
-- [Iteration 1 - MVP](https://github.com/alkerr/JCE-Indoor-Nav/wiki/MVP-Minimal-Viable-Product)
-- [Iteration 2 - Feature X]()
+- [Iteration 1 - MVP](https://github.com/alkerr/JCE-Indoor-Nav/wiki/Iter1-Minimal-Viable-Product)
+- [Iteration 2 - office service, routing service, and language](https://github.com/alkerr/JCE-Indoor-Nav/wiki/Iter2-office-service,-routing-service,-and-language)
 - [Iteration 3 - Feature Y]()
 - [Iteration 4 - Feature Z]()
 
