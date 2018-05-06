@@ -14,7 +14,7 @@ var AzrieliMap = function(){
 	});
 	
 	//options for tile layers [ISSUE : noWrap true gives me GET errors of invalid pictures]
-	var tilelayer_options = {minZoom: 2, maxZoom:5, noWrap: true};
+	var tilelayer_options = {minZoom: 2, maxZoom:5, noWrap: false};
 	//floor tile layers array 
 	// 0 is floor-2, 1 is floor-1 etc..
 	var layers = [L.tileLayer("maps/floor-2/{z}/{x}/{y}.png",tilelayer_options),
