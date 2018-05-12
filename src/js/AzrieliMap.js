@@ -113,7 +113,17 @@ var AzrieliMap = function(){
 			var x = markers[i].coord[0];
 			var y = markers[i].coord[1];
 			var floor = markers[i].floor;
-			var new_marker = L.marker([x+delta_x, y+delta_y],{icon:marker_icon});
+			var tmp_x = delta_x;
+			if(x<=-45 || x>=60){
+				if(map._zoom == 2)
+					tmp_x+=5;
+				else if(map._zoom == 3)
+					tmp_x+=2;
+				else if(map._zoom == 4)
+					tmp_x+=1;
+			}
+			
+			var new_marker = L.marker([x+tmp_x, y+delta_y],{icon:marker_icon});
 			markers[i].obj.remove();
 			markers[i] = {obj:new_marker,coord:[x,y],floor:floor}
 			if(current_floor == floor)
@@ -140,7 +150,6 @@ var AzrieliMap = function(){
 	var print_markers=  function(){
 		console.log(markers);
 		console.log(map);
-		
 	}
 	
 	
