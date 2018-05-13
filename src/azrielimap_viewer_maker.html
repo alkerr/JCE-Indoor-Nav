@@ -430,14 +430,15 @@ var textFile = null,
 	
 	$("#parseGraph").click(function(event){
 		TheGraphJson=JSON.parse($("#textbox").val());
-		index=TheGraphJson.waypoints.length+1;
-		prvPointId=TheGraphJson.waypoints[TheGraphJson.waypoints.length-1].id;
-		if(index<1){
-			index=1;
+		var idmax=TheGraphJson.waypoints[0].id;
+		for(var i=0;i<TheGraphJson.waypoints.length;i++){
+			if(TheGraphJson.waypoints[i].id>idmax){
+				idmax=TheGraphJson.waypoints[i].id;
+			}
 		}
-		if(prvPointId<1){
-			prvPointId=1;
-		}
+		index=idmax+1;
+		prvPointId=idmax;
+
 		$("#prvNodeId").val(""+prvPointId);
 	
 		GraphMaker.drawOnMap(TheGraphJson.waypoints,current_floor);
@@ -717,7 +718,7 @@ $(document).ready(function() {AzrieliMap.initModule();});
 <button id="parseGraph">parse graph</button>
 
 <textarea id="prvNodeId"></textarea> 
-<button id="changeNodeBtn">current Node</button>
+<button id="changeNodeBtn">change current Node</button>
 <button id="delNodeBtn">delete Node</button>
 
 <textarea id="fromNodeId"></textarea> 
