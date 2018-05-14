@@ -11,12 +11,7 @@
 		<script>
 		/*@written by John Musleh **/
 		
-		var map=null; //map object
-var TheGraphJson={waypoints:[]};
-
-var GraphMaker = function () {
-
-	var marker_icon = L.icon({ //icon object for the markers
+			var marker_icon = L.icon({ //icon object for the markers
 		iconUrl: 'img/marker.png',
 		iconSize: [60, 60],
 		iconAnchor: [22, 94],
@@ -24,6 +19,16 @@ var GraphMaker = function () {
 		shadowSize: [68, 95],
 		shadowAnchor: [22, 94]
 	});
+		
+		var map=null; //map object
+			var current_floor = null; //current floor (integer)
+var TheGraphJson={waypoints:[]};
+
+var curPathFrom=null,curPathTo=null;
+
+var GraphMaker = function () {
+
+
 
 	function translateCoor(graph,xOffset,yOffset,xScale,yScale,z){
 		for(var i=0;i<graph.length;i++){
@@ -58,14 +63,12 @@ var GraphMaker = function () {
 				graph.splice(i,1);
 		}
 	
-	
-	
 	}
 	function joinNode(graph,fromId,toId){
 		var fromNode=getNode(graph,fromId);
 		var toNode=getNode(graph,toId);
 		if(jQuery.isEmptyObject(fromNode)||jQuery.isEmptyObject(toNode)){
-			console.log("node not found");
+			console.log("joinNode:node not found");			
 			return;
 		
 		}
@@ -85,9 +88,14 @@ var GraphMaker = function () {
 	
 
 	function addNewNode(graph,prvPointId,newId,x,y,z){
+		if(!jQuery.isEmptyObject(getNode(graph,newId))){
+			alert("current Node exists on graph");
+			return;
+		}
+	
 		var prvNode=getNode(graph,prvPointId);
 
-	
+		
 		var xdif = x - prvNode.x;
 		var ydif = y - prvNode.y;
 		var distsq=xdif * xdif + ydif * ydif;
@@ -169,7 +177,7 @@ var GraphMaker = function () {
 			
 			
 		}
-		console.log("node not found: "+id);
+		//console.log("node not found: "+id);
 		return {};
 	
 	}
@@ -199,6 +207,64 @@ var GraphMaker = function () {
 		var ytile = parseInt(Math.floor( (1 - Math.log(Math.tan(lat.toRad()) + 1 / Math.cos(lat.toRad())) / Math.PI) / 2 * (1<<zoom) ));
 		return "" + zoom + "/" + xtile + "/" + ytile;
 	}
+	
+	
+	var  group2 = L.layerGroup();
+	
+	function drawPath(fromId,toId){
+	
+		group2.clearLayers();
+		var waypoint=data["waypoints"];
+		var navgraph=routingService.makeNavGraph(waypoint);		
+		var  graph = new Graph(navgraph);		
+		var shortPathIndesx=graph.findShortestPath(fromId, toId);		
+		var todest=routingService.getPolyCoor(waypoint,shortPathIndesx,current_floor);	
+
+		
+		var circle=L.circle([todest[0][0], todest[0][1]], 2).bindTooltip("test");
+		group2.addLayer(circle );
+		
+		var polyline = new L.Polyline(todest, {color: 'red',weight: 3,opacity: 0.5,smoothFactor: 1});//draw the route on the current floor
+		
+		for(var i=0;i<shortPathIndesx.length-1;i++){//draw up or down on floor change, and write destination on the end
+				var curNode=getNode(waypoint,shortPathIndesx[i]);
+				var nextNode=getNode(waypoint,shortPathIndesx[i+1]);
+				if(curNode.z!=current_floor)
+					continue;
+				if(nextNode.z>curNode.z){
+					var marker = new L.marker([curNode.x,curNode.y], { opacity: 0.01,icon:marker_icon  }); //opacity may be set to zero
+					marker.bindTooltip("up", {permanent: true, className: "my-label", offset: [0, 0] });
+					group2.addLayer( marker );
+						
+				}
+				else if(nextNode.z<curNode.z){
+					var marker = new L.marker([curNode.x,curNode.y], { opacity: 0.01,icon:marker_icon  }); //opacity may be set to zero
+					marker.bindTooltip("down", {permanent: true, className: "my-label", offset: [0, 0] });
+					group2.addLayer( marker );
+					
+				}
+				
+				if(nextNode.id+""==toId+""){
+					var marker = new L.marker([nextNode.x,nextNode.y], { opacity: 0.01,icon:marker_icon  }); //opacity may be set to zero
+					marker.bindTooltip("destination", {permanent: true, className: "my-label", offset: [0, 0] });
+					group2.addLayer( marker );
+					
+				}
+				
+				
+			}
+		
+		group2.addLayer( polyline );
+		group2.addTo(map);
+	}
+	
+	
+	
+
+
+
+
+	
 		
 		function makeNavGraph(graph){
 			var temp={};
@@ -211,13 +277,10 @@ var GraphMaker = function () {
 			var latlngs=[];
 			for(var i=0;i<path.length;i++){
 				var curNode=getNode(graph,path[i]);
-
 				if(""+z!=curNode.z+""){
 					continue;
 				}
-
 				latlngs.push([curNode.x,curNode.y]);
-
 			}
 			return latlngs;
 		
@@ -239,7 +302,9 @@ var GraphMaker = function () {
 
 			return { makeNavGraph: makeNavGraph,
 				getPolyCoor: getPolyCoor,
-				makeNavGraph:makeNavGraph};
+				makeNavGraph:makeNavGraph,
+				drawPath:drawPath
+				};
 		}();
 
 		
@@ -247,7 +312,7 @@ var GraphMaker = function () {
 var AzrieliMap = function(){
 	// ---------------------------------- [VARIABLES] -----------------------------------------------------------
 	
-	var current_floor = null; //current floor (integer)
+
 	
 	var marker_icon = L.icon({ //icon object for the markers
 		iconUrl: 'img/marker.png',
@@ -382,17 +447,19 @@ var textFile = null,
 
 
 
-    
-	
-	
+   
 	$("#upFloor").click(function(event){
 	   AzrieliMap.load_floor(current_floor+1);
 		GraphMaker.drawOnMap(TheGraphJson.waypoints,current_floor);
+		
+
+
 
 	});
 	$("#dnFloor").click(function(event){
 	   AzrieliMap.load_floor(current_floor-1);
 	   GraphMaker.drawOnMap(TheGraphJson.waypoints,current_floor);
+
 	});
 	
 	$("#changeNodeBtn").click(function(event){
@@ -402,6 +469,14 @@ var textFile = null,
 	   }
 	   GraphMaker.drawOnMap(TheGraphJson.waypoints,current_floor);
 	});
+	$("#currentNodeBtn").click(function(event){
+	   var temp=parseInt(($("#toNodeId").val()));
+	   if(Number.isInteger(temp)==true){
+		index=temp;
+	   }
+	   GraphMaker.drawOnMap(TheGraphJson.waypoints,current_floor);
+	});
+
 
 	$("#delNodeBtn").click(function(event){
 	   var temp=parseInt(($("#prvNodeId").val()));
@@ -415,7 +490,7 @@ var textFile = null,
 	
 
 	$("#connectNodeBtn").click(function(event){
-	   var fromId=parseInt(($("#fromNodeId").val()));
+	   var fromId=parseInt(($("#prvNodeId").val()));
 	   var toId=parseInt(($("#toNodeId").val()));
 	   if(Number.isInteger(fromId)==true&&Number.isInteger(toId)==true){
 	   GraphMaker.joinNode(TheGraphJson.waypoints,fromId,toId);
@@ -440,9 +515,24 @@ var textFile = null,
 		prvPointId=idmax;
 
 		$("#prvNodeId").val(""+prvPointId);
-	
+		$("#toNodeId").val(""+index);
 		GraphMaker.drawOnMap(TheGraphJson.waypoints,current_floor);
 	});
+	
+	$("#drawPathBtn").click(function(event){
+	   var fromId=parseInt(($("#prvNodeId").val()));
+	   var toId=parseInt(($("#toNodeId").val()));
+	   if(Number.isInteger(fromId)==true&&Number.isInteger(toId)==true){
+		routingService.drawPath(fromId,toId);
+		curPathFrom=fromId;
+		curPathTo=toId;
+		curPathTo=toId;
+	   }
+
+	   
+	});
+	
+	
 	
 
  
@@ -459,25 +549,6 @@ var textFile = null,
 		load_floor(0);
 		
 		
-		var waypoint=data["waypoints"];
-		var navgraph=routingService.makeNavGraph(waypoint);
-		
-		var  graph = new Graph(navgraph);
-
-
-
-		var shortPathIndesx=graph.findShortestPath('1', '42');
-		
-		var tomnhalids=routingService.getPolyCoor(waypoint,shortPathIndesx,0);
-				
-
-		 
-
-//L.circle(tomnhalids[0], 2).addTo(map);
-
-//var firstpolyline = new L.Polyline(tomnhalids, {color: 'red',weight: 3,opacity: 0.5,smoothFactor: 1}).addTo(map);
-
-
 
 		
 map.on('click', function(e) {
@@ -496,7 +567,7 @@ map.on('click', function(e) {
 
 		
 		$("#prvNodeId").val(""+prvPointId);
-
+		$("#toNodeId").val(""+index);
 
 		GraphMaker.drawOnMap(TheGraphJson.waypoints,current_floor);
 	   $("#textbox").val( JSON.stringify(TheGraphJson));
@@ -681,6 +752,10 @@ map.on('click', function(e) {
 		//update_path if it exists
 		if(polyline!=null)
 			update_path();
+			
+		if(curPathFrom!=null&&curPathTo!=null){
+		routingService.drawPath(curPathFrom,curPathTo);
+		}
 		
 	}
 	
@@ -717,13 +792,14 @@ $(document).ready(function() {AzrieliMap.initModule();});
 <button id="dnFloor">dnFloor</button>
 <button id="parseGraph">parse graph</button>
 
-<textarea id="prvNodeId"></textarea> 
-<button id="changeNodeBtn">change current Node</button>
 <button id="delNodeBtn">delete Node</button>
-
-<textarea id="fromNodeId"></textarea> 
+<textarea id="prvNodeId"></textarea> 
+<button id="changeNodeBtn">change previous Node</button>
 <textarea id="toNodeId"></textarea> 
+<button id="currentNodeBtn">change current Node</button>
 <button id="connectNodeBtn">connect two nodes</button>
+
+<button id="drawPathBtn">draw path</button>
 
 
 
