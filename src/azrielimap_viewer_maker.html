@@ -26,6 +26,9 @@ var TheGraphJson={waypoints:[]};
 
 var curPathFrom=null,curPathTo=null;
 
+
+
+
 var GraphMaker = function () {
 
 
@@ -207,6 +210,23 @@ var GraphMaker = function () {
 		var ytile = parseInt(Math.floor( (1 - Math.log(Math.tan(lat.toRad()) + 1 / Math.cos(lat.toRad())) / Math.PI) / 2 * (1<<zoom) ));
 		return "" + zoom + "/" + xtile + "/" + ytile;
 	}
+
+
+	function getRouteToDest(startId, destId) {
+		var waypoint=data["waypoints"];
+		var navgraph=routingService.makeNavGraph(waypoint);		
+		var  graph = new Graph(navgraph);		
+		var shortPathIndesx=graph.findShortestPath(startId, destId);	
+
+		var pathXYZ=[];
+		for(var i=0;i<shortPathIndesx.length;i++){
+			var curNode=getNode(waypoint,shortPathIndesx[i]);
+			pathXYZ.push({"x":curNode.x,"y":curNode.y,"z":curNode.z})
+
+		}	
+		return pathXYZ;
+			
+	}
 	
 	
 	var  group2 = L.layerGroup();
@@ -214,21 +234,43 @@ var GraphMaker = function () {
 	function drawPath(fromId,toId){
 	
 		group2.clearLayers();
-		var waypoint=data["waypoints"];
-		var navgraph=routingService.makeNavGraph(waypoint);		
+		var nodes=data["waypoints"];
+		var navgraph=routingService.makeNavGraph(nodes);		
 		var  graph = new Graph(navgraph);		
-		var shortPathIndesx=graph.findShortestPath(fromId, toId);		
-		var todest=routingService.getPolyCoor(waypoint,shortPathIndesx,current_floor);	
+		var path=graph.findShortestPath(fromId, toId);		
 
 		
-		var circle=L.circle([todest[0][0], todest[0][1]], 2).bindTooltip("test");
-		group2.addLayer(circle );
+		var latlngs=[];
+		for(var i=0;i<path.length;i++){
+			var curNode=getNode(nodes,path[i]);
+			if(""+current_floor==curNode.z+""){
+				latlngs.push([curNode.x,curNode.y]);
+			}
+			else{
+				if(latlngs.length!=0){
+					var circle=L.circle([latlngs[0][0], latlngs[0][1]], 2).bindTooltip("start");
+					group2.addLayer(circle);
+	
+					var polyline = new L.Polyline(latlngs, {color: 'red',weight: 3,opacity: 0.5,smoothFactor: 1});//draw the route on the current floor
+					group2.addLayer( polyline );				
+					latlngs=[];
+				}
+			}
+		}
 		
-		var polyline = new L.Polyline(todest, {color: 'red',weight: 3,opacity: 0.5,smoothFactor: 1});//draw the route on the current floor
+		if(latlngs.length!=0){
+			var circle=L.circle([latlngs[0][0], latlngs[0][1]], 2).bindTooltip("start");
+			group2.addLayer(circle);
+	
+			var polyline = new L.Polyline(latlngs, {color: 'red',weight: 3,opacity: 0.5,smoothFactor: 1});//draw the route on the current floor
+			group2.addLayer( polyline );				
+			latlngs=[];
+		}
+
 		
-		for(var i=0;i<shortPathIndesx.length-1;i++){//draw up or down on floor change, and write destination on the end
-				var curNode=getNode(waypoint,shortPathIndesx[i]);
-				var nextNode=getNode(waypoint,shortPathIndesx[i+1]);
+		for(var i=0;i<path.length-1;i++){//draw up or down on floor change, and write destination on the end
+				var curNode=getNode(nodes,path[i]);
+				var nextNode=getNode(nodes,path[i+1]);
 				if(curNode.z!=current_floor)
 					continue;
 				if(nextNode.z>curNode.z){
@@ -254,7 +296,7 @@ var GraphMaker = function () {
 				
 			}
 		
-		group2.addLayer( polyline );
+
 		group2.addTo(map);
 	}
 	
@@ -303,9 +345,51 @@ var GraphMaker = function () {
 			return { makeNavGraph: makeNavGraph,
 				getPolyCoor: getPolyCoor,
 				makeNavGraph:makeNavGraph,
-				drawPath:drawPath
+				drawPath:drawPath,
+				getRouteToDest:getRouteToDest
 				};
 		}();
+		
+		
+var GeoService = function () {
+
+	function getTileURL(lat, lon, zoom=8) {
+		var xtile = parseInt(Math.floor( (lon + 180) / 360 * (1<<zoom) ));
+		var ytile = parseInt(Math.floor( (1 - Math.log(Math.tan(lat* Math.PI / 180) + 1 / Math.cos(lat* Math.PI / 180)) / Math.PI) / 2 * (1<<zoom) ));
+		return {"x":xtile,"y":ytile};
+	}
+
+	var  group2 = L.layerGroup();
+
+	function drawUser(lat,lng){
+	
+	//L.polygon([graph[i].x, graph[i].y,graph[i].y+5]).bindTooltip("my tooltip").addTo(map);
+			//L.circle([graph[i].x, graph[i].y], 2).bindTooltip("test").addTo(map);
+			
+	
+			
+		//var polyline = new L.Polyline(latlngs, {color: 'red',weight: 3,opacity: 0.5,smoothFactor: 1});
+	
+		group2.clearLayers();
+		
+		loc=getTileURL(lat,lng);
+		console.log(loc);
+		var circle=L.circle([loc.x, loc.y], {color: 'red',weight: 5}).bindTooltip("your location");
+		group2.addLayer(circle);
+		
+		group2.addTo(map);
+		
+		
+	}
+
+
+	return {
+		drawUser: drawUser
+	}
+
+}();
+
+		
 
 		
 		
@@ -436,7 +520,7 @@ var textFile = null,
 
   document.getElementById('downloadlink').addEventListener('click', function () {
     var link = document.getElementById('downloadlink');
-    link.href = makeTextFile(document.getElementById('textbox').value);
+    link.href = makeTextFile("data="+(document.getElementById('textbox').value));
     
   }, false);
 })();
@@ -517,6 +601,9 @@ var textFile = null,
 		$("#prvNodeId").val(""+prvPointId);
 		$("#toNodeId").val(""+index);
 		GraphMaker.drawOnMap(TheGraphJson.waypoints,current_floor);
+		
+		
+		
 	});
 	
 	$("#drawPathBtn").click(function(event){
@@ -528,6 +615,17 @@ var textFile = null,
 		curPathTo=toId;
 		curPathTo=toId;
 	   }
+	   
+	   
+	});
+	
+	$("#btnNavigate").click(function(event){
+
+	   navigator.geolocation.getCurrentPosition(function(position) {
+			console.log("pos= "+position.coords.latitude+", " +position.coords.longitude);
+			GeoService.drawUser(position.coords.latitude,position.coords.longitude);
+			
+		});
 
 	   
 	});
@@ -800,6 +898,8 @@ $(document).ready(function() {AzrieliMap.initModule();});
 <button id="connectNodeBtn">connect two nodes</button>
 
 <button id="drawPathBtn">draw path</button>
+<button id="btnNavigate">navigate</button>
+
 
 
 
