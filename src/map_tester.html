@@ -1,0 +1,68 @@
+<!DOCTYPE = html>
+<html>
+	<head>
+		<title>Azrieli Map</title>
+		<link rel = "stylesheet" type="text/css" href = "css/leaflet/leaflet.css"/>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+		<script src="js/leaflet/leaflet.js"></script>
+		<script src="js/AzrieliMap.js"></script>
+	</head>
+	<body>
+  
+  	<style>
+	
+
+
+ 
+	#controls{
+
+		font-size: 3vh;  
+	
+	}
+	#controls button{
+				
+		font-size: 3vh;
+	
+	}
+	#controls textarea{
+		
+		font-size: 1.5vh;
+	
+	}
+
+
+		
+	
+	</style>
+	
+	<div id="allpage"style=" ">
+		<div id = "map" style="width:100%; height:100%;background:#888888; margin:0;"></div>
+		<div id = "floor"></div>
+    
+    <div id="controls" 
+			style="
+			margin-top:-50;
+			position: -webkit-sticky;
+			position: sticky;
+			bottom: 0;
+			z-index: 1001;">
+				<textarea id="textbox"></textarea> 
+				<a download="waypoints.txt" id="downloadlink">Download</a>
+
+				<button id="upFloor">upFloor</button>
+				<button id="dnFloor">dnFloor</button>
+				<button id="parseGraph">parse graph</button>
+
+				<button id="delNodeBtn">delete Node</button>
+				<textarea id="prvNodeId"></textarea> 
+				<button id="changeNodeBtn">change previous Node</button>
+				<textarea id="toNodeId"></textarea> 
+				<button id="currentNodeBtn">change current Node</button>
+				<button id="connectNodeBtn">connect two nodes</button>
+
+				<button id="drawPathBtn">draw path</button>
+				<button id="btnNavigate">navigate</button>
+
+	</div>
+	</body>
+</html>
