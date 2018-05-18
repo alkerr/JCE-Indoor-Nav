@@ -1,0 +1,35 @@
+*{
+    font-size: 24px;
+}
+#main{
+    height:80%;
+    text-align: center;
+}
+
+#nav{
+    height:20%;
+    text-align: center;
+}
+
+.button {
+    outline: none;
+    padding: 15px 25px;
+    font-size: 24px;
+    text-align: center;
+    cursor: pointer;
+    outline: none;
+    color: white;
+    background: linear-gradient(-90deg,#FA1E1E,#CF1D1D);
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 9px #999;
+}
+
+.button:active {
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
+}
+
+.button:focus{
+    outline:none;
+}

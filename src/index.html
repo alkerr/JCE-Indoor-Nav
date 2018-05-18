@@ -1,0 +1,51 @@
+<!DOCTYPE = html>
+<html ng-app="app">
+	<head>
+		<title>Azrieli Maps</title>
+        
+       <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+        
+		<link rel = "stylesheet" type="text/css" href = "css/leaflet/leaflet.css"/>
+        <link rel = "stylesheet" type="text/css" href = "css/app.css"/>
+        
+ 
+        
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+        
+          <!-- Angular Material requires Angular.js Libraries -->
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-animate.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-aria.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-messages.min.js"></script>
+
+        <!-- Angular Material Library -->
+        <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.8/angular-material.min.js"></script>
+        
+        <script src="bower_components/angular-translate/angular-translate.min.js"></script>
+        <script src="bower_components/angular-local-storage/dist/angular-local-storage.min.js"></script>
+        
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+		<script src="js/leaflet/leaflet.js"></script>
+		<script src="js/graph.js"></script>
+		<script src="js/AzrieliMap.js"></script>
+        <script src = "js/app.js"></script>
+        
+        
+        <script src ="data/waypoints.js"></script>
+	</head>
+	<body>
+        <div ng-controller=router>
+            <div ng-include src = "getPage()" id = "main"></div>
+            <div id = "nav">
+                <button ng-click ="load_menu_page()" class ="button" id ="ldlang">{{'MENU'|translate}}</button>
+                <select class="selectpicker" data-width="fit" ng-click="langChanged()">
+                    <option>English</option>
+                    <option>عربي</option>
+                    <option>עִברִית</option>
+                </select>
+            </div>
+        </div>
+        
+	</body>
+</html>

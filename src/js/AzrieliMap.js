@@ -1,3 +1,43 @@
+
+var routingService = function(){
+	function makeNavGraph(graph){
+		var temp={};
+		for(var i=0;i<graph.length;i++){
+			temp[(graph[i].id+"")]=graph[i].adj;
+		}
+		return temp;
+	}
+	
+	function getNode(graph,id){
+		for(var i=0;i<graph.length;i++){
+			if(""+graph[i].id===""+id)
+				return graph[i];	
+		}
+		console.log("node not found: "+id);
+		return {};	
+	}
+	
+	function getRouteToDest(startId, destId) {
+		var waypoint=data["waypoints"];
+		var navgraph=makeNavGraph(waypoint);		
+		var  graph = new Graph(navgraph);		
+		var shortPathIndesx=graph.findShortestPath(startId, destId);	
+
+		var pathXYZ=[];
+		for(var i=0;i<shortPathIndesx.length;i++){
+			var curNode=getNode(waypoint,shortPathIndesx[i]);
+			pathXYZ.push({"x":curNode.x,"y":curNode.y,"z":curNode.z})
+
+		}	
+		return pathXYZ;	
+	}
+	return { getRouteToDest: getRouteToDest};
+}();
+
+
+
+
+
 /*
 ------------------------------------------------------------------------------
  The AzrieliMap module is a graphical interactive map of the college campus  |
@@ -180,34 +220,71 @@ var AzrieliMap = function(){
 	var floor1_path = []; //holds path coordinates for floor 1
 	var floor2_path = []; //holds path coordinates for floor 2
 	var floor3_path = []; //holds path coordinates for floor 3
-	var polyline = null; //object to hold polyline , can only have 1 each floor
-	var update_path = function(){
-		if(polyline!=null)
-			polyline.remove();
+	var update_path = function(prev_floor){
+		//remove all current polylines from prev_floor
+		var i;
+		if(prev_floor == -2){
+			for(i=0; i<floorm2_path.length; i++)
+				if(floorm2_path[i].polyline != null)
+					floorm2_path[i].polyline.remove();
+		}
+		else if(prev_floor == -1){
+			for(i=0; i<floorm1_path.length; i++)
+				if(floorm1_path[i].polyline != null)
+					floorm1_path[i].polyline.remove();
+		}
+		else if(prev_floor == 0){
+			for(i=0; i<floor0_path.length; i++)
+				if(floor0_path[i].polyline != null)
+					floor0_path[i].polyline.remove();
+		}
+		else if(prev_floor == 1){
+			for(i=0; i<floor1_path.length; i++)
+				if(floor1_path[i].polyline != null)
+					floor1_path[i].polyline.remove();
+		}
+		else if(prev_floor == 2){
+			for(i=0; i<floor2_path.length; i++)
+				if(floor2_path[i].polyline != null)
+					floor2_path[i].polyline.remove();
+		}
+		else if(prev_floor == 3){
+			for(i=0; i<floor3_path.length; i++)
+				if(floor3_path[i].polyline != null)
+					floor3_path[i].polyline.remove();
+		}
+		
+		//drawing polyline paths for the current floor
 		if(current_floor==-2 && floorm2_path.length>0){
-			polyline = L.polyline(floorm2_path, {color: 'red',weight:10}).addTo(map);
-			map.fitBounds(polyline.getBounds());
+			for(i=0; i<floorm2_path.length;i++){
+				floorm2_path[i].polyline = L.polyline(floorm2_path[i].path, {color: 'red',weight:10}).addTo(map);
+				console.log("drawn"+floorm2_path[i].path);
+			}
 		}
 		else if(current_floor==-1 && floorm1_path.length>0){
-			polyline = L.polyline(floorm1_path, {color: 'red',weight:10}).addTo(map);
-			map.fitBounds(polyline.getBounds());
+			for(i=0; i<floorm1_path.length;i++){
+				floorm1_path[i].polyline = L.polyline(floorm1_path[i].path, {color: 'red',weight:10}).addTo(map);
+			}
 		}
 		else if(current_floor==0 && floor0_path.length>0){
-			console.log("drawing for floor 0 with weight 10");
-			polyline = L.polyline(floor0_path, {color: 'red',weight:10}).addTo(map);
-			map.fitBounds(polyline.getBounds());
+			for(i=0; i<floor0_path.length;i++){
+				floor0_path[i].polyline = L.polyline(floor0_path[i].path, {color: 'red',weight:10}).addTo(map);
+			}
 		}
 		else if(current_floor==1 && floor1_path.length>0){
-			polyline = L.polyline(floor1_path, {color: 'red',weight:10}).addTo(map);
-			map.fitBounds(polyline.getBounds());
+			for(i=0; i<floor1_path.length;i++){
+				floor1_path[i].polyline = L.polyline(floor1_path[i].path, {color: 'red',weight:10}).addTo(map);
+			}
 		}
 		else if(current_floor==2 && floor2_path.length>0){
-			polyline = L.polyline(floor2_path, {color: 'red',weight:10}).addTo(map);
-			map.fitBounds(polyline.getBounds());
+			for(i=0; i<floor2_path.length;i++){
+				floor2_path[i].polyline = L.polyline(floor2_path[i].path, {color: 'red',weight:10}).addTo(map);
+			}
 		}
 		else if(current_floor==3 && floor3_path.length>0){
-			polyline = L.polyline(floor3_path, {color: 'red',weight:10}).addTo(map);
-			map.fitBounds(polyline.getBounds());
+			for(i=0; i<floor3_path.length;i++){
+				floor3_path[i].polyline = L.polyline(floor3_path[i].path, {color: 'red',weight:10}).addTo(map);
+			}
 		}
 	}
 	
@@ -218,29 +295,132 @@ var AzrieliMap = function(){
 		if(map==null || arguments.length != 1)
 			return;
 		//resetting previous path
-		floorm2_path=[];
+		for(i=0; i<floorm2_path.length; i++)
+			if(floorm2_path[i].polyline != null)
+				floorm2_path[i].polyline.remove();
+			
+		for(i=0; i<floorm1_path.length; i++)
+			if(floorm1_path[i].polyline != null)
+				floorm1_path[i].polyline.remove();
+			
+		for(i=0; i<floor0_path.length; i++)
+			if(floor0_path[i].polyline != null)
+				floor0_path[i].polyline.remove();
+			
+		for(i=0; i<floor1_path.length; i++)
+			if(floor1_path[i].polyline != null)
+				floor1_path[i].polyline.remove();
+			
+		for(i=0; i<floor2_path.length; i++)
+			if(floor2_path[i].polyline != null)
+				floor2_path[i].polyline.remove();
+			
+		for(i=0; i<floor3_path.length; i++)
+			if(floor3_path[i].polyline != null)
+				floor3_path[i].polyline.remove();
+			
+		floorm2_path=[]; //array of objects {path:[[x,y]], polyine: polyline object or null}
 		floorm1_path=[];
 		floor0_path=[];
 		floor1_path=[];
 		floor2_path=[];
 		floor3_path=[];
+		var new_path_flag = 1;
 		var i;
 		for(i=0; i<path.length; i++){
-			if(path[i].z == -2)
-				floorm2_path[floorm2_path.length] = [(path[i].x)+2,(path[i].y)+0.5];
-			else if(path[i].z == -1)
-				floorm1_path[floorm1_path.length] = [(path[i].x)+2,(path[i].y)+0.5];
-			else if(path[i].z == 0)
-				floor0_path[floor0_path.length] = [(path[i].x)+2,(path[i].y)+0.5];
-			else if(path[i].z == 1)
-				floor1_path[floor1_path.length] = [(path[i].x)+2,(path[i].y)+0.5];
-			else if(path[i].z == 2)
-				floor2_path[floor2_path.length] = [(path[i].x)+2,(path[i].y)+0.5];
-			else if(path[i].z == 3)
-				floor3_path[floor3_path.length] = [(path[i].x)+2,(path[i].y)+0.5];
+			if(i>0 && path[i].z != path[i-1].z)
+				new_path_flag = 1;
+
+			if(path[i].z == -2){
+				if(new_path_flag ==1){
+					floorm2_path[floorm2_path.length] = {path:[ [(path[i].x),(path[i].y)] ], polyline:null};
+					new_path_flag = 0;
+				}
+				else{
+					if(floorm2_path.length > 0 ){
+						floorm2_path[floorm2_path.length-1].path[floorm2_path[floorm2_path.length-1].path.length] = [(path[i].x),(path[i].y)];
+					}
+					else{
+						floorm2_path[0].path[floorm2_path[0].path.length] = [(path[i].x),(path[i].y)];
+					}
+				}
+			}
+			
+			else if(path[i].z == -1){
+				if(new_path_flag ==1){
+					floorm1_path[floorm1_path.length] = {path:[ [(path[i].x),(path[i].y)] ], polyline:null};
+					new_path_flag = 0;
+				}
+				else{
+					if(floorm1_path.length > 0 ){
+						floorm1_path[floorm1_path.length-1].path[floorm1_path[floorm1_path.length-1].path.length] = [(path[i].x),(path[i].y)];
+					}
+					else{
+						floorm1_path[0].path[floorm1_path[0].path.length] = [(path[i].x),(path[i].y)];
+					}
+				}
+			}
+			
+			else if(path[i].z == 0){
+				if(new_path_flag ==1){
+					floor0_path[floor0_path.length] = {path:[ [(path[i].x),(path[i].y)] ], polyline:null};
+					new_path_flag = 0;
+				}
+				else{
+					if(floor0_path.length > 0 ){
+						floor0_path[floor0_path.length-1].path[floor0_path[floor0_path.length-1].path.length] = [(path[i].x),(path[i].y)];
+					}
+					else{
+						floor0_path[0].path[floor0_path[0].path.length] = [(path[i].x),(path[i].y)];
+					}
+				}
+			}
+			
+			else if(path[i].z == 1){
+				if(new_path_flag ==1){
+					floor1_path[floor1_path.length] = {path:[ [(path[i].x),(path[i].y)] ], polyline:null};
+					new_path_flag = 0;
+				}
+				else{
+					if(floor1_path.length > 0 ){
+						floor1_path[floor1_path.length-1].path[floor1_path[floor1_path.length-1].path.length] = [(path[i].x),(path[i].y)];
+					}
+					else{
+						floor1_path[0].path[floor1_path[0].path.length] = [(path[i].x),(path[i].y)];
+					}
+				}
+			}
+			
+			else if(path[i].z == 2){
+				if(new_path_flag ==1){
+					floor2_path[floor2_path.length] = {path:[ [(path[i].x),(path[i].y)] ], polyline:null};
+					new_path_flag = 0;
+				}
+				else{
+					if(floor2_path.length > 0 ){
+						floor2_path[floor2_path.length-1].path[floor2_path[floor2_path.length-1].path.length] = [(path[i].x),(path[i].y)];
+					}
+					else{
+						floor2_path[0].path[floor2_path[0].path.length] = [(path[i].x),(path[i].y)];
+					}
+				}
+			}
+			else if(path[i].z == 3){
+				if(new_path_flag ==1){
+					floor3_path[floor3_path.length] = {path:[ [(path[i].x),(path[i].y)] ], polyline:null};
+					new_path_flag = 0;
+				}
+				else{
+					if(floor3_path.length > 0 ){
+						floor3_path[floor3_path.length-1].path[floor3_path[floor3_path.length-1].path.length] = [(path[i].x),(path[i].y)];
+					}
+					else{
+						floor3_path[0].path[floor3_path[0].path.length] = [(path[i].x),(path[i].y)];
+					}
+				}
+			}
 		}
-		
-		update_path();
+		update_path(current_floor);
 	}
 
 	
@@ -251,15 +431,19 @@ var AzrieliMap = function(){
 		if a path exists , removes current polyline and updates path via update_path()
 	*/
 	var load_floor = function(f){
-		if(typeof f != "number" || map==null || current_floor==f){
-			console.log("f not a number or map is null or current floor is loaded");
+		if(typeof f != "number" || map==null ){
+			console.log("f not a number or map is null");
 			return;
 		}
 		if(f<-2 || f>3)
 			f=-2;
-		if(current_floor!=null)
+		var prev_floor = -2;
+		if(current_floor!=null){
 			layers[current_floor+2].remove();
+			prev_floor = current_floor;
+		}
 		layers[f+2].addTo(map);
+		
 		current_floor=f;
 	
 		//removing all previous markers and loading new markers for the floor
@@ -272,11 +456,12 @@ var AzrieliMap = function(){
 			
 		}
 		
-		//update_path if it exists
-		if(polyline!=null)
-			update_path();
+		update_path(prev_floor);
 		
 	}
+	
+	
+	/*geo_to_tile(): translate geo location coordinates to tile map coordinates */
 	
 	/* debug function */
 	var print_markers=  function(){
@@ -289,7 +474,7 @@ var AzrieliMap = function(){
 			print_markers:print_markers,
 			draw_path:draw_path};
 }();
-$(document).ready(function() {AzrieliMap.initModule();});
+//$(document).ready(function() {AzrieliMap.initModule();});
 
 //get map zoom level -> map._zoom
 //map.on("zoomend", func) -> detects when zoom level changes
