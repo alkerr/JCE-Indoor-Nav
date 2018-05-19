@@ -884,24 +884,6 @@ $(document).ready(function() {AzrieliMap.initModule();});
 		
 	</head>
 	<body>
-	<textarea id="textbox"></textarea> 
-<a download="waypoints.js" id="downloadlink">Download</a>
-
-<button id="upFloor">upFloor</button>
-<button id="dnFloor">dnFloor</button>
-<button id="parseGraph">parse graph</button>
-
-<button id="delNodeBtn">delete Node</button>
-<textarea id="prvNodeId"></textarea> 
-<button id="changeNodeBtn">change previous Node</button>
-<textarea id="toNodeId"></textarea> 
-<button id="currentNodeBtn">change current Node</button>
-<button id="connectNodeBtn">connect two nodes</button>
-
-<button id="drawPathBtn">draw path</button>
-<button id="btnNavigate">navigate</button>
-
-
 
 
 
