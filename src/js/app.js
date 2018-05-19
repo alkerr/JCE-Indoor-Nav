@@ -19,6 +19,10 @@ var app =angular.module('app',  ['pascalprecht.translate','LocalStorageModule'])
 
 app.controller('router',function($scope,$translate,localStorageService){
     //functions for nav
+    $(document).ready(function() {  
+        $('.selectpicker').change($scope.langChanged);
+    });
+
     $scope.load_map_page = function(){
         $scope.page = "map.html"
         setTimeout(AzrieliMap.initModule, 500);
