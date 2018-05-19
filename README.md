@@ -46,15 +46,25 @@ Please visit our wiki for furthur project info:
 ### Project Documents
 - [Project Idea](docs/idea.pdf) ([Presentation](docs/idea-slides.pdf))
 - [Project Inception](../../wiki/inception)
-- [Software Requirements Specification](../../wiki/srs)
-- [Software Design Specification](../../wiki/sds)
+- [SRS](https://github.com/alkerr/JCE-Indoor-Nav/wiki/SRS)  
+- [SDS](https://github.com/alkerr/JCE-Indoor-Nav/wiki/SDS)  
+- [User Manual](https://github.com/alkerr/JCE-Indoor-Nav/wiki/User-Manual)  
+- [Product documentation](https://github.com/alkerr/JCE-Indoor-Nav/wiki/Product-documentation)  
+- [Project Board](https://github.com/alkerr/JCE-Indoor-Nav/projects/1)  
+- [Issues](https://github.com/alkerr/JCE-Indoor-Nav/issues)
+
+
 
 ### Iteration Pages
 - [Iteration 0 - ZFR](https://github.com/alkerr/JCE-Indoor-Nav/wiki/ZFR---Zero-Feature-Release)
 - [Iteration 1 - MVP](https://github.com/alkerr/JCE-Indoor-Nav/wiki/Iter1-Minimal-Viable-Product)
 - [Iteration 2 - office service, routing service, and language](https://github.com/alkerr/JCE-Indoor-Nav/wiki/Iter2-office-service,-routing-service,-and-language)
-- [Iteration 3 - Feature Y]()
+- [Iteration 3 -language and navigation service](https://github.com/alkerr/JCE-Indoor-Nav/wiki/iter3-language-service,-navigation-service-and-alpha-release)
 - [Iteration 4 - Feature Z]()
+
+# links:
+[iter2](https://github.com/alkerr/JCE-Indoor-Nav/wiki/Iter2-office-service,-routing-service,-and-language)  
+[MVP](https://github.com/alkerr/JCE-Indoor-Nav/wiki/Iter1-Minimal-Viable-Product)  
 
 
 
