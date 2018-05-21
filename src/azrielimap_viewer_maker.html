@@ -706,7 +706,7 @@ var textFile = null,
 
 	
 	$("#parseGraph").click(function(event){
-		if($("#textbox").val()==="") 
+		if($("#textbox").val()===" ") 
 			TheGraphJson=data.waypoints; 
 		else 
 			TheGraphJson=JSON.parse($("#textbox").val());
