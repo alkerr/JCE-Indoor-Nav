@@ -30,11 +30,6 @@ var TheGraphJson={"waypoints":[]};
 var curPathFrom=null,curPathTo=null;
 
 
-
-
-
-
-
 var GraphMaker = function () {
 
 
@@ -81,16 +76,47 @@ var GraphMaker = function () {
 			return;
 		
 		}
-			
 		
-		var xdif = toNode.x - fromNode.x;
-		var ydif = toNode.y - fromNode.y;
+		var curPoint=map.project({"lat":toNode.x,"lng":toNode.y},5);
+		var prvPoint=map.project({"lat":fromNode.x,"lng":fromNode.y},5);
+
+		var xdif = curPoint.x - prvPoint.x;
+		var ydif = curPoint.y - prvPoint.y;
 		var distsq=xdif * xdif + ydif * ydif;
 		var distance=Math.sqrt(distsq);
-	
+			
 		fromNode.adj[""+toNode.id]=distance;
 		toNode.adj[""+fromNode.id]=distance;
 	
+	
+	}
+	function translateDistances(graph){
+		for(var i=0;i<graph.length;i++){
+			var fromNode=graph[i];
+			var adjNames=Object.keys(graph[i].adj);
+				for(var j=0;j<adjNames.length;j++){
+					var toNode=getNode(graph,adjNames[j]);
+					
+					var curPoint=map.project({"lat":toNode.x,"lng":toNode.y},5);
+					var prvPoint=map.project({"lat":fromNode.x,"lng":fromNode.y},5);
+
+					var xdif = curPoint.x - prvPoint.x;
+					var ydif = curPoint.y - prvPoint.y;
+					var distsq=xdif * xdif + ydif * ydif;
+					var distance=Math.sqrt(distsq);
+						
+					fromNode.adj[""+toNode.id]=distance;
+					toNode.adj[""+fromNode.id]=distance;
+			}
+		}
+	
+	}
+	function increaseDist(graph,fromId,toId,dist){
+		var fromNode=getNode(graph,fromId);
+		var toNode=getNode(graph,toId);
+		fromNode.adj[""+toNode.id]+=dist;
+		toNode.adj[""+fromNode.id]+=dist;			
+		
 	
 	}
 	
@@ -103,10 +129,15 @@ var GraphMaker = function () {
 		}
 	
 		var prvNode=getNode(graph,prvPointId);
-
 		
-		var xdif = x - prvNode.x;
-		var ydif = y - prvNode.y;
+		var curPoint=map.project({"lat":x,"lng":y},5);
+		var prvPoint;
+		if(prvNode.x!=undefined)
+			prvPoint=map.project({"lat":prvNode.x,"lng":prvNode.y},5);
+		else
+			prvPoint={"x":curPoint.x,"y":curPoint.y};
+		var xdif = curPoint.x - prvPoint.x;
+		var ydif = curPoint.y - prvPoint.y;
 		var distsq=xdif * xdif + ydif * ydif;
 		var distance=Math.sqrt(distsq);
 	
@@ -145,7 +176,7 @@ var GraphMaker = function () {
 			
 			
 			//L.polygon([graph[i].x, graph[i].y,graph[i].y+5]).bindTooltip("my tooltip").addTo(map);
-			//L.circle([graph[i].x, graph[i].y], 2).bindTooltip("test").addTo(map);
+			//L.circle([graph[i].x, graph[i].y], 2).bindTooltip("test").addTo(map);L.circle([graph[i].x, graph[i].y], 2).bindTooltip("test").addTo(map);
 			
 			var marker = new L.marker([graph[i].x, graph[i].y], { opacity: 0.01,icon:marker_icon }); //opacity may be set to zero
 			marker.bindTooltip(""+graph[i].id, {permanent: true, className: "my-label", offset: [0, 0] });
@@ -197,7 +228,9 @@ var GraphMaker = function () {
 		"addNewNode":addNewNode,
 		"joinNode":joinNode,
 		"deleteNode": deleteNode,
-		"translateCoor":translateCoor
+		"translateCoor":translateCoor,
+		 translateDistances: translateDistances,
+		 increaseDist:increaseDist
 	}
 
 }();
@@ -306,13 +339,6 @@ var GraphMaker = function () {
 		group2.addTo(map);
 	}
 	
-	
-	
-
-
-
-
-	
 		
 		function makeNavGraph(graph){
 			var temp={};
@@ -366,15 +392,18 @@ var GeoService = function () {
 	}
 
 
-	var rotDegree=5;
+	var rotDegree=0;
 	var mapDistortion=null;	
 	function calcMapDistortion(){
 
-		var newTop=rotate(4096,4096,4743,1729,rotDegree);
-		var newBtm=rotate(4096,4096,3270,6214,rotDegree);
+		var topCollege=map.project({"lat":71.552741,"lng":28.652344},5);
+		var bottomCollege=map.project({"lat":-55.329144,"lng":-36.386719},5);	
 		var topGps =map.project({"lat":31.769834,"lng":35.194080},18);
-		var btmGps=map.project({"lat":31.768232,"lng":35.193454},18);
+		var btmGps=map.project({"lat":31.768456,"lng":35.193439},18);
 		
+		var newTop=rotate(4096,4096,topCollege.x,topCollege.y,rotDegree);
+		var newBtm=rotate(4096,4096,bottomCollege.x,bottomCollege.y,rotDegree);
+
 		var xfactor=(newTop[0]-newBtm[0])/(topGps.x-btmGps.x);
 		var yfactor=(newTop[1]-newBtm[1])/(topGps.y-btmGps.y);
 		
@@ -383,8 +412,9 @@ var GeoService = function () {
 		
 		mapDistortion={"xFactor":xfactor,"yFactor":yfactor,"centerX":centerx,"centerY":centery};
 	
-	
 	}
+	
+	
 	//offsets stairs outsiede
 	//{"waypoints":[{"id":1,"x":3.6888551431470478,"y":25.488281250000004,"z":0,"adj":{"2":5.774783946559172}},{"id":2,"x":5.834616165610059,"y":30.849609375000004,"z":1,"adj":{"1":5.774783946559172,"3":9.260702836361869}},{"id":3,"x":8.320212289522944,"y":39.77050781250001,"z":2,"adj":{"2":9.260702836361869,"4":5.041118279117637}},{"id":4,"x":6.620957270326323,"y":35.02441406250001,"z":3,"adj":{"3":5.041118279117637,"5":9.619990790860623}},{"id":5,"x":5.353521355337334,"y":25.488281250000004,"z":-1,"adj":{"4":9.619990790860623,"6":2.3653255993520763}},{"id":6,"x":4.477856485570586,"y":23.291015625000004,"z":-2,"adj":{"5":2.3653255993520763}}]}
 	
@@ -444,7 +474,6 @@ var GeoService = function () {
 		temp.x*=mapDistortion.xFactor;
 		temp.y*=mapDistortion.yFactor;
 		
-		
 		temp.x*=floorScale[floor+2][0];
 		temp.y*=floorScale[floor+2][1];
 		temp.x-=floorOffset[floor+2][0];
@@ -481,13 +510,10 @@ var GeoService = function () {
 		prvLat=lat;
 		prvLng=lng;
 		
-		if(floorOffset.length==0)
-			calcFloorOffset();
-
 		group2.clearLayers();
 		coods=gpsToMap(lat,lng,current_floor);
 
-		var circle=L.circle(coods, {color: 'red',weight: 5}).bindTooltip("your location");
+		var circle=L.circle(coods, {color: 'red',weight: 15,opacity:0.5}).bindTooltip("your location");
 		group2.addLayer(circle);
 		
 		group2.addTo(map);
@@ -643,7 +669,7 @@ var textFile = null,
 
   document.getElementById('downloadlink').addEventListener('click', function () {
     var link = document.getElementById('downloadlink');
-    link.href = makeTextFile("data="+(document.getElementById('textbox').value));
+    link.href = makeTextFile("data="+ JSON.stringify(TheGraphJson));
     
   }, false);
 })();
@@ -706,10 +732,7 @@ var textFile = null,
 
 	
 	$("#parseGraph").click(function(event){
-		if($("#textbox").val()===" ") 
-			TheGraphJson=data.waypoints; 
-		else 
-			TheGraphJson=JSON.parse($("#textbox").val());
+		TheGraphJson=JSON.parse($("#prvNodeId").val());
 		var idmax=TheGraphJson.waypoints[0].id;
 		for(var i=0;i<TheGraphJson.waypoints.length;i++){
 			if(TheGraphJson.waypoints[i].id>idmax){
@@ -734,7 +757,10 @@ var textFile = null,
 		routingService.drawPath(fromId,toId);
 		curPathFrom=fromId;
 		curPathTo=toId;
-		curPathTo=toId;
+	   }
+	   else{
+		curPathFrom=null;
+		curPathTo=null;
 	   }
 	   
 	   
@@ -742,23 +768,50 @@ var textFile = null,
 	
 	$("#btnNavigate").click(function(event){
 
-	   navigator.geolocation.getCurrentPosition(function(e) {
-			//console.log("pos= "+e.coords.latitude+", " +e.coords.longitude);
-			GeoService.drawUser(e.coords.latitude,e.coords.longitude);
-		//	GeoService.drawUser(31.769834,35.194080);
-		//	GeoService.drawUser(31.768732,35.193561);
-		//	GeoService.drawUser(31.768232,35.193454);
-		//	GeoService.drawUser(31.769038, 35.194069);//middle stairs btm
-			
-		//	GeoService.drawUser(31.769226, 35.193684);//cneter
-			//31769226,"y":35193684
-			//GeoService.drawUser(31.769080, 35.193800) //elevator
-		 //  alert(e.accuracy);
-			
+	   navigator.geolocation.getCurrentPosition(function(e) {;
+		GeoService.drawUser(e.coords.latitude,e.coords.longitude);	
 		});
 
 	   
 	});
+	
+	$("#btnRestore").click(function(event){
+		TheGraphJson=data;	
+		var idmax=TheGraphJson.waypoints[0].id;
+		for(var i=0;i<TheGraphJson.waypoints.length;i++){
+			if(TheGraphJson.waypoints[i].id>idmax){
+				idmax=TheGraphJson.waypoints[i].id;
+			}
+		}
+		index=idmax+1;
+		prvPointId=idmax;
+
+		$("#prvNodeId").val(""+prvPointId);
+		$("#toNodeId").val(""+index);
+		GraphMaker.drawOnMap(TheGraphJson.waypoints,current_floor);
+		
+	});
+	
+	$("#btnRemoveGraph").click(function(event){
+		TheGraphJson={"waypoints":[]};
+		GraphMaker.drawOnMap(TheGraphJson.waypoints,current_floor);
+		
+	});
+
+	
+	
+	
+//	$("#btnUserMode").click(function(event){
+//		$("#countries").empty();//show table on html page
+///		$("#countries").append("<button id=\"btnsecret\">secret</button>");
+//	$("#btnsecret").click(function(event){
+//		alert("secret");
+//	});
+
+//	});
+
+
+	
 	
 	
 	
@@ -779,12 +832,19 @@ var textFile = null,
 		
 		
 		
+//	function onLocationFound(e) {
+//		var radius = e.accuracy / 2;
+//		alert(e.accuracy);
+//	}
 
+//	map.on('locationfound', onLocationFound);
+//	    function locate() {
+ //     map.locate({setView: true, maxZoom: 16});
+  //  }
 
-map.on('locationfound', function(e){
+  // call locate every 3 seconds... forever
+  //  setInterval(locate, 3000);
 
-    alert("e.latlng");
-});
 
 		
 map.on('click', function(e) {
@@ -813,7 +873,7 @@ map.on('click', function(e) {
 
 
 
-  //  alert(e.latlng);
+   // console.log("clicked"+e.latlng);
 } );
 		
 	
@@ -1060,22 +1120,24 @@ $(document).ready(function() {AzrieliMap.initModule();});
 			position: absolute;
 			bottom:0;
 			z-index: 1001;">
-				<textarea id="textbox"></textarea> 
 				<a download="waypoints.txt" id="downloadlink">Download</a>
-
+				<button id="btnRestore">show graph</button>
+				<button id="btnRemoveGraph">hide graph</button>
 				<button id="upFloor">upFloor</button>
 				<button id="dnFloor">dnFloor</button>
 				<button id="parseGraph">parse graph</button>
 
-				<button id="delNodeBtn">delete Node</button>
+				<button id="delNodeBtn">del Node</button>
 				<textarea id="prvNodeId"></textarea> 
-				<button id="changeNodeBtn">change previous Node</button>
+				<button id="changeNodeBtn">change prvNode</button>
 				<textarea id="toNodeId"></textarea> 
-				<button id="currentNodeBtn">change current Node</button>
-				<button id="connectNodeBtn">connect two nodes</button>
+				<button id="currentNodeBtn">change curNode</button>
+				<button id="connectNodeBtn">connect nodes</button>
 
 				<button id="drawPathBtn">draw path</button>
-				<button id="btnNavigate">navigate</button>
+				<button id="btnNavigate">draw position</button>
+				
+				
 
 		</div>
 		<div id = "floor"></div>
