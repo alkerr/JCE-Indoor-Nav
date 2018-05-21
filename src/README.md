@@ -4,4 +4,8 @@ and will implement the rest of the features such as routing into the map.
 
 preview:
 https://htmlpreview.github.io/?https://github.com/alkerr/JCE-Indoor-Nav/blob/master/src/azrielimap_viewer.html
+
 https://htmlpreview.github.io/?https://github.com/alkerr/JCE-Indoor-Nav/blob/master/src/azrielimap_viewer_maker.html
+
+
+https://htmlpreview.github.io/?https://github.com/alkerr/JCE-Indoor-Nav/blob/master/src/tester1.html
