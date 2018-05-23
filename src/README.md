@@ -9,3 +9,5 @@ https://htmlpreview.github.io/?https://github.com/alkerr/JCE-Indoor-Nav/blob/mas
 
 
 https://htmlpreview.github.io/?https://github.com/alkerr/JCE-Indoor-Nav/blob/master/src/tester1.html
+
+https://htmlpreview.github.io/?https://github.com/alkerr/JCE-Indoor-Nav/blob/master/src/azrielimap_viewer_maker2.html
