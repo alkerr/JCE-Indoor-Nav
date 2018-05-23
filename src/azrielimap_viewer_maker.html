@@ -821,7 +821,7 @@ var textFile = null,
 			var mapLoc=GeoService.gpsToMap(crd.latitude,crd.longitude,current_floor);
 			var closestIndex=GeoService.getClosestIndex(mapLoc.lat,mapLoc.lng);
 			
-			$("#toNodeId").val((Math.round(crd.latitude * 1000000) / 1000000)+", "+(Math.round(crd.longitude * 1000000) / 1000000)+".[m]: "+crd.accuracy+",node: "+closestIndex+",z: " + current_floor);
+			$("#toNodeId").val((Math.round(crd.latitude * 1000000) / 1000000)+", "+(Math.round(crd.longitude * 1000000) / 1000000)+" a:"+crd.accuracy+" node:"+closestIndex+" z:" + current_floor);
 			
 
 		}
@@ -832,10 +832,12 @@ var textFile = null,
 		if(!locate){
 			handleId=navigator.geolocation.watchPosition(navHandle);
 			locate =true;
+			$('#btnNavigate').css({'background-color':'#4CAF50'});
 		}
 		else{
 			navigator.geolocation.clearWatch(handleId);
-			locate=false;
+			locate=false; 
+			$('#btnNavigate').css({'background-color':'#FCFCFC'});
 		}
 	
 
@@ -1186,6 +1188,7 @@ $(document).ready(function() {AzrieliMap.initModule();});
 	#controls textarea{
 		
 		font-size: 1.5vh;
+		margin-bottom:-1vh;
 	
 	}
 
