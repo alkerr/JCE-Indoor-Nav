@@ -390,6 +390,49 @@ var GeoService = function () {
 		var ytile = parseInt(Math.floor( (1 - Math.log(Math.tan(lat* Math.PI / 180) + 1 / Math.cos(lat* Math.PI / 180)) / Math.PI) / 2 * (1<<zoom) ));
 		return {"x":xtile,"y":ytile};
 	}
+	
+	function getClosestIndex(lat, lng,curFloor=current_floor,graph=data.waypoints) {
+		var clickedPx=map.project({"lat":lat,"lng":lng},5);
+		var minDist=-1,minIndex;
+		for(var i=0;i<graph.length;i++){
+			if(graph[i].z!=curFloor){
+				continue;			
+			}
+			var curPx=map.project({"lat":graph[i].x,"lng":graph[i].y},5);
+			
+			var xdif = curPx.x - clickedPx.x;
+			var ydif = curPx.y - clickedPx.y;
+			var distsq=xdif * xdif + ydif * ydif;
+			var distance=Math.sqrt(distsq);
+			
+			if(minDist==-1||distance<minDist){
+				minDist=distance;
+				minIndex=graph[i].id;
+			}
+		}
+		return minIndex;
+	}
+	function getClosestNode(lat, lng,curFloor=current_floor,graph=data.waypoints) {
+		return GraphMaker.getNode(graph,getClosestIndex(lat, lng,curFloor,graph));
+	}
+	
+	function getDistance(lat, lng,node,curFloor=current_floor) {
+		if(node.z!=curFloor){
+			return 10000;	//map is 8192 pxels long		
+			console.log("diffrent floor");
+		}
+		var clickedPx=map.project({"lat":lat,"lng":lng},5);
+		var curPx=map.project({"lat":node.x,"lng":node.y},5);
+		
+		var xdif = curPx.x - clickedPx.x;
+		var ydif = curPx.y - clickedPx.y;
+		var distsq=xdif * xdif + ydif * ydif;
+		var distance=Math.sqrt(distsq);
+		
+		return distance;
+	}
+	
+	
 
 
 	var rotDegree=0;
@@ -397,15 +440,9 @@ var GeoService = function () {
 	function calcMapDistortion(){
 
 		var topCollege=map.project({"lat":71.552741,"lng":28.652344},5);
-		var bottomCollege=map.project({"lat":-56.68841969532391,"lng":-9.257810711860659},5);	
+		var bottomCollege=map.project({"lat":-55.329144,"lng":-36.386719},5);	
 		var topGps =map.project({"lat":31.769834,"lng":35.194080},18);
-		var btmGps=map.project({"lat":31.768246,"lng":35.193645},18);
-								 
-		//old coords
-		//var topCollege=map.project({"lat":71.552741,"lng":28.652344},5);
-		//var bottomCollege=map.project({"lat":-55.329144,"lng":-36.386719},5);	
-		//var topGps =map.project({"lat":31.769834,"lng":35.194080},18);
-		//var btmGps=map.project({"lat":31.768456,"lng":35.193439},18);
+		var btmGps=map.project({"lat":31.768456,"lng":35.193439},18);
 		
 		var newTop=rotate(4096,4096,topCollege.x,topCollege.y,rotDegree);
 		var newBtm=rotate(4096,4096,bottomCollege.x,bottomCollege.y,rotDegree);
@@ -503,7 +540,7 @@ var GeoService = function () {
 	}
 	var  group2 = L.layerGroup();
 	var prvLat=null,prvLng=null;
-	function drawUser(lat=null,lng=null){
+	function drawUser(lat=null,lng=null,radius=4){
 	
 		if(lat==null||lng==null){
 			if(prvLat==null||prvLng==null)
@@ -519,7 +556,10 @@ var GeoService = function () {
 		group2.clearLayers();
 		coods=gpsToMap(lat,lng,current_floor);
 
-		var circle=L.circle(coods, {color: 'red',weight: 15,opacity:0.5}).bindTooltip("your location");
+		var scale2=Math.abs(Math.cos(coods.lat*Math.PI/180));
+		radius*=50000;
+		
+		var circle=L.circle(coods, {color: 'red',"radius": radius*scale2,opacity:0.5}).bindTooltip("your location");
 		group2.addLayer(circle);
 		
 		group2.addTo(map);
@@ -539,7 +579,10 @@ function rotate(cx, cy, x, y, angle) {
 
 	return {
 		drawUser: drawUser,
-		gpsToMap:gpsToMap
+		gpsToMap:gpsToMap,
+		getClosestNode:getClosestNode,
+		getClosestIndex:getClosestIndex,
+		 getDistance: getDistance,
 	}
 
 }();
@@ -771,12 +814,21 @@ var textFile = null,
 	   
 	   
 	});
+		function navHandle(pos) {
+			var crd = pos.coords;
+			GeoService.drawUser(crd.latitude,crd.longitude,crd.accuracy);
+
+		}
 	
 	$("#btnNavigate").click(function(event){
+		navigator.geolocation.watchPosition(navHandle);
+	
 
-	   navigator.geolocation.getCurrentPosition(function(e) {;
-		GeoService.drawUser(e.coords.latitude,e.coords.longitude);	
-		});
+
+
+	 //  navigator.geolocation.getCurrentPosition(function(e) {;
+	//		GeoService.drawUser(e.coords.latitude,e.coords.longitude);	
+	//	});
 
 	   
 	});
@@ -858,21 +910,32 @@ map.on('click', function(e) {
 	
 
 
-	    var x = e.latlng.lat;
-        var y = e.latlng.lng;
 
-     GraphMaker.addNewNode(TheGraphJson.waypoints,prvPointId,index,x,y,current_floor)
-
-   
-		prvPointId=index;
-		index++;
-
+		var tool=document.getElementById("selectTool").value
 		
-		$("#prvNodeId").val(""+prvPointId);
-		$("#toNodeId").val(""+index);
+		if (tool==="graph making") {
+			GraphMaker.addNewNode(TheGraphJson.waypoints,prvPointId,index,e.latlng.lat,e.latlng.lng,current_floor)
+			prvPointId=index;
+			index++;
+			$("#prvNodeId").val(""+prvPointId);
+			$("#toNodeId").val(""+index);
+			$("#textbox").val( JSON.stringify(TheGraphJson));
+			GraphMaker.drawOnMap(TheGraphJson.waypoints,current_floor);
+        } 
+		if (tool==="closest location") {
+			console.log("closest index: "+JSON.stringify(GeoService.getClosestIndex(e.latlng.lat,e.latlng.lng)));
 
-		GraphMaker.drawOnMap(TheGraphJson.waypoints,current_floor);
-	   $("#textbox").val( JSON.stringify(TheGraphJson));
+        } 
+		if (tool==="node delete") {
+			var deleteDistance=200;
+			var curNode=GeoService.getClosestNode(e.latlng.lat,e.latlng.lng,current_floor,TheGraphJson.waypoints);
+			if(GeoService.getDistance(e.latlng.lat,e.latlng.lng,curNode)<deleteDistance){
+				GraphMaker.deleteNode(TheGraphJson.waypoints,curNode.id);
+				GraphMaker.drawOnMap(TheGraphJson.waypoints,current_floor);
+			}
+        } 
+
+
 	  
 
 		
@@ -1124,8 +1187,16 @@ $(document).ready(function() {AzrieliMap.initModule();});
 		<div id="controls" 
 			style="
 			position: absolute;
-			bottom:0;
+			bottom:5;
 			z-index: 1001;">
+				<select id="selectTool">
+					<option>closest location</option>
+					<option>graph making</option>
+					<option>node delete</option>
+
+
+				</select>
+
 				<a download="waypoints.txt" id="downloadlink">Download</a>
 				<button id="btnRestore">show graph</button>
 				<button id="btnRemoveGraph">hide graph</button>
