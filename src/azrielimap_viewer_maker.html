@@ -821,14 +821,22 @@ var textFile = null,
 			var mapLoc=GeoService.gpsToMap(crd.latitude,crd.longitude,current_floor);
 			var closestIndex=GeoService.getClosestIndex(mapLoc.lat,mapLoc.lng);
 			
-			$("#toNodeId").val("current location: "+crd.latitude+", "+crd.latitude+"\naccuracy[m]: "+
-					crd.accuracy+"\nclosest node index: "+closestIndex+"\ncurrent floor: " + current_floor);
+			$("#toNodeId").val((Math.round(crd.latitude * 1000000) / 1000000)+", "+(Math.round(crd.longitude * 1000000) / 1000000)+".[m]: "+crd.accuracy+",node: "+closestIndex+",z: " + current_floor);
 			
 
 		}
+		var locate=false;
+		var handleId;
 	
 	$("#btnNavigate").click(function(event){
-		navigator.geolocation.watchPosition(navHandle);
+		if(!locate){
+			handleId=navigator.geolocation.watchPosition(navHandle);
+			locate =true;
+		}
+		else{
+			navigator.geolocation.clearWatch(handleId);
+			locate=false;
+		}
 	
 
 
@@ -931,7 +939,7 @@ map.on('click', function(e) {
         } 
 		if (tool==="closest location") {
 			//console.log("closest index: "+JSON.stringify(GeoService.getClosestIndex(e.latlng.lat,e.latlng.lng)));
-			$("#prvNodeId").val("closest index: "+JSON.stringify(GeoService.getClosestIndex(e.latlng.lat,e.latlng.lng)));
+			$("#prvNodeId").val("near click index: "+JSON.stringify(GeoService.getClosestIndex(e.latlng.lat,e.latlng.lng)));
 
         } 
 		if (tool==="node delete") {
