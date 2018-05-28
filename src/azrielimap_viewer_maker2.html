@@ -733,6 +733,7 @@ var textFile = null,
 
 
 	});
+	
 	$("#dnFloor").click(function(event){
 	   AzrieliMap.load_floor(current_floor-1);
 	   GraphMaker.drawOnMap(TheGraphJson.waypoints,current_floor);
@@ -763,6 +764,14 @@ var textFile = null,
 		 
 	   }
 	   GraphMaker.drawOnMap(TheGraphJson.waypoints,current_floor);
+	   
+	   
+	//  	$("#btnsOld").hide();	
+	///	$("#btnsExtra").show();
+	//	$("#btnsExtra").empty();
+		
+	//   $("#btnsExtra").append(
+	 //  "<button id=\"drawPathBtn\" onclick=\"extra(this.innerText)\">extra</button>");
 	});
 	
 
@@ -817,11 +826,29 @@ var textFile = null,
 		function navHandle(pos) {
 			var crd = pos.coords;
 			GeoService.drawUser(crd.latitude,crd.longitude,crd.accuracy);
+			
+			var mapLoc=GeoService.gpsToMap(crd.latitude,crd.longitude,current_floor);
+			var closestIndex=GeoService.getClosestIndex(mapLoc.lat,mapLoc.lng);
+			
+			$("#toNodeId").val((Math.round(crd.latitude * 1000000) / 1000000)+", "+(Math.round(crd.longitude * 1000000) / 1000000)+
+									" a:"+Math.round(crd.accuracy )+" node:"+closestIndex+" z:" + current_floor);
+			
 
 		}
+		var locate=false;
+		var handleId;
 	
 	$("#btnNavigate").click(function(event){
-		navigator.geolocation.watchPosition(navHandle);
+		if(!locate){
+			handleId=navigator.geolocation.watchPosition(navHandle);
+			locate =true;
+			$('#btnNavigate').css({'background-color':'#4CAF50'});
+		}
+		else{
+			navigator.geolocation.clearWatch(handleId);
+			locate=false; 
+			$('#btnNavigate').css({'background-color':'#FCFCFC'});
+		}
 	
 
 
@@ -855,6 +882,21 @@ var textFile = null,
 		GraphMaker.drawOnMap(TheGraphJson.waypoints,current_floor);
 		
 	});
+	
+	
+
+	var offices=[,,,,];
+	$("#btnGetOffices").click(function(event){
+		$("#offices").empty();
+		for(var i=0;i<offices.length;i++){
+			$("#offices").append("<button id=\"btnNavHere\" onclick=\"navigateTo(this.innerText)\">"+"current office"+"</button>");
+		
+		}
+	});
+	$("#btnNavigate").click(function(event){
+		
+	});
+	
 
 	
 	
@@ -902,7 +944,27 @@ var textFile = null,
 
   // call locate every 3 seconds... forever
   //  setInterval(locate, 3000);
+  
+  
+  
+$("#selectTool").click(function(event){
 
+	 var tool=document.getElementById("selectTool").value;
+		
+		if (tool==="navigate") {
+		 	$("#btnsOld").hide();	
+			$("#btnsNav").show()
+		
+		}
+		
+		else{		
+			$("#btnsOld").show();	
+			$("#btnsNav").hide();
+			$("#offices").empty();
+		
+		}
+		
+	});
 
 		
 map.on('click', function(e) {
@@ -911,7 +973,7 @@ map.on('click', function(e) {
 
 
 
-		var tool=document.getElementById("selectTool").value
+		var tool=document.getElementById("selectTool").value;
 		
 		if (tool==="graph making") {
 			GraphMaker.addNewNode(TheGraphJson.waypoints,prvPointId,index,e.latlng.lat,e.latlng.lng,current_floor)
@@ -923,7 +985,8 @@ map.on('click', function(e) {
 			GraphMaker.drawOnMap(TheGraphJson.waypoints,current_floor);
         } 
 		if (tool==="closest location") {
-			console.log("closest index: "+JSON.stringify(GeoService.getClosestIndex(e.latlng.lat,e.latlng.lng)));
+			//console.log("closest index: "+JSON.stringify(GeoService.getClosestIndex(e.latlng.lat,e.latlng.lng)));
+			$("#prvNodeId").val("near click index: "+JSON.stringify(GeoService.getClosestIndex(e.latlng.lat,e.latlng.lng)));
 
         } 
 		if (tool==="node delete") {
@@ -1144,6 +1207,20 @@ $(document).ready(function() {AzrieliMap.initModule();});
 //zoom level 1 -> (-8,2)
 
 
+function extra(e){
+	//console.log(e);
+	$("#btnsOld").show();
+	$("#btnsExtra").hide();
+
+}
+
+function navigateTo(e){
+	
+	console.log(e);
+	
+}
+
+
 		
 		</script>
 		
@@ -1170,6 +1247,7 @@ $(document).ready(function() {AzrieliMap.initModule();});
 	#controls textarea{
 		
 		font-size: 1.5vh;
+		margin-bottom:-1vh;
 	
 	}
 
@@ -1189,14 +1267,16 @@ $(document).ready(function() {AzrieliMap.initModule();});
 			position: absolute;
 			bottom:5;
 			z-index: 1001;">
+			
 				<select id="selectTool">
 					<option>closest location</option>
 					<option>graph making</option>
 					<option>node delete</option>
-
+					<option>navigate</option>
 
 				</select>
-
+				
+			<div id = "btnsOld">
 				<a download="waypoints.txt" id="downloadlink">Download</a>
 				<button id="btnRestore">show graph</button>
 				<button id="btnRemoveGraph">hide graph</button>
@@ -1214,10 +1294,22 @@ $(document).ready(function() {AzrieliMap.initModule();});
 				<button id="drawPathBtn">draw path</button>
 				<button id="btnNavigate">draw position</button>
 				
+			</div>
+				
+			<div id = "btnsNav" style="display: none;">
+				<button id="btnGetOffices">get offices</button>
+				<button id="btnNavigate">navigate</button>
+			
+			</div>
+			
+			<div id = "offices" 
+			</div>
+			
+			
 				
 
 		</div>
-		<div id = "floor"></div>
+		
 
 		
 
