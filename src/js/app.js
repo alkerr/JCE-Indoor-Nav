@@ -1,19 +1,3 @@
-/*Translation objects */
-var english = {
-    'MAP':'Map',
-    'MENU':'Menu'
-};
-
-var herbrew = {
-    'MAP':'מַפָּה',
-    'MENU':'תַפרִיט'
-}
-var arabic = {
-    'MAP':'خريطة',
-    'MENU':'قائمة'
-}
-
-
 /*AngularJS App Module */
 var app =angular.module('app',  ['pascalprecht.translate','LocalStorageModule']);
 
@@ -24,11 +8,21 @@ app.controller('router',function($scope,$translate,localStorageService){
     });
 
     $scope.load_map_page = function(){
-        $scope.page = "map.html"
-        setTimeout(AzrieliMap.initModule, 500);
+        console.log("loading map");
+        $scope.page = "map.html";
+        setTimeout(function(){
+            AzrieliMap.initModule(localStorageService.get("lang"));
+        }, 1000);;
+        console.log("called");
+        $("#cmd_map").hide();
+        $("#cmd_menu").show();
     }
     $scope.load_menu_page = function(){
-         $scope.page = "language.html"
+        $scope.page = "menu.html";
+        $("#cmd_menu").hide();
+        $("#cmd_map").show();
+        
+    
      }
 
     $scope.getPage = function(){
@@ -37,17 +31,21 @@ app.controller('router',function($scope,$translate,localStorageService){
     
     $scope.langChanged = function(){
         var lang = $(".selectpicker").val();
+        console.log("picked: "+lang);
         if(lang == "English"){
             $translate.use("en");
             localStorageService.set("lang","en");
+            AzrieliMap.change_lang('en');
         }
         else if(lang == "عربي"){
             $translate.use("ar");
             localStorageService.set("lang","ar");
+            AzrieliMap.change_lang('ar');
         }
         else if(lang == "עִברִית"){
             $translate.use("hb");
             localStorageService.set("lang","hb");
+            AzrieliMap.change_lang('hb');
         }
         console.log("value: "+localStorageService.get("lang"));
     }
@@ -81,33 +79,55 @@ app.controller('router',function($scope,$translate,localStorageService){
         $(".selectpicker").val("English");
         $("#nav").show();
         $scope.load_map_page();
-    }
+    };
     $scope.pick_ar = function(){
         localStorageService.set("lang","ar");
         $translate.use("ar");
         $(".selectpicker").val("عربي");
         $("#nav").show();
         $scope.load_map_page();
-    }
+    };
     $scope.pick_hb = function(){
         localStorageService.set("lang","hb");
         $translate.use("hb");
         $(".selectpicker").val("עִברִית");
         $("#nav").show();
         $scope.load_map_page();
-    }
+    };
     
     
     //functions for menu page
-    
+    $scope.destinations=destinations;
+    $scope.view_dest = function(floor,index){
+        if(floor==-2){
+            console.log(destinations.floorm2[index].name);
+        }
+        else if(floor == -1){
+            console.log(destinations.floorm1[index].name);
+            
+        }
+        else if(floor == 0){
+            console.log(destinations.floor0[index].name);
+        }
+        else if(floor == 1){
+            console.log(destinations.floor1[index].name);
+        }
+        else if(floor == 2){
+            console.log(destinations.floor2[index].name);
+        }
+        else if(floor == 3){
+            console.log(destinations.floor3[index].name);
+        }
+        
+        console.log(index);
+    };
     
  
 });
 
-
 app.config(['$translateProvider', function($translateProvider) {
     $translateProvider.translations('en',english);
-    $translateProvider.translations('hb',herbrew);
+    $translateProvider.translations('hb',hebrew);
     $translateProvider.translations('ar',arabic);
     $translateProvider.preferredLanguage('en');
 }]);

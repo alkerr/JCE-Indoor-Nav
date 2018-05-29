@@ -1,4 +1,3 @@
-
 var routingService = function(){
 	function makeNavGraph(graph){
 		var temp={};
@@ -36,7 +35,20 @@ var routingService = function(){
 
 
 
-
+/** used to translate the marker descriptions */
+var translate = function(lang,str){
+    var obj = null;
+    if(lang == 'en'){
+        obj = english;
+    }
+    else if(lang == 'ar'){
+        obj = arabic;
+    }
+    else if(lang == 'hb'){
+        obj = hebrew;
+    }
+    return obj[str];
+}
 
 /*
 ------------------------------------------------------------------------------
@@ -54,7 +66,9 @@ var AzrieliMap = function(){
 	// ---------------------------------- [VARIABLES] -----------------------------------------------------------
 	var map=null; //map object
 	var current_floor = null; //current floor (integer)
-	
+	var tooltip= null;
+    var lang = 'en';
+    
 	var marker_icon = L.icon({ //icon object for the markers
 		iconUrl: 'img/marker.png',
 		iconSize: [60, 60],
@@ -80,22 +94,53 @@ var AzrieliMap = function(){
 	 
 
 	//---------------------------------- [FUNCTIONS] -----------------------------------------------------------
-
+    
+    var log = function(str){
+        console.log(str);
+    }
+    
+    var change_lang = function(l){
+        if(l == 'en')
+            lang = l;
+        else if(l == 'ar')
+            lang = l;
+        else if(l == 'hb')
+            lang = l;
+    }
+    
+    var on_mark_click = function(e){
+        var marker = e.target;
+        if (tooltip!=null && L.stamp(e.originalEvent.target) === L.stamp(tooltip._container)) {
+            console.log("navigate to "+ marker.options.title);
+        } 
+        else{
+            if(tooltip != null)
+                tooltip.remove();
+            
+            var txt = translate(lang,marker.options.title);
+            tooltip = L.tooltip({permanent: true,interactive:true},marker).setLatLng([e.latlng.lat,e.latlng.lng]).setContent(txt+'<br>click to navigate').addTo(map);
+            marker.bindTooltip(tooltip);
+        }
+    }
+    
+    
 	/* mark(): draws a marker and adds it to the markers[] array*/
 	var mflag = 0; //set to 1 when zoomed in to add the markers - this flag is used to zoom back out to previous zoom in update_markers
 	var prev_zoom = 2;// holds the previous zoom when adding a marker
-	var mark = function(x,y,floor){
-		if(arguments.length != 3 || typeof x != "number" || typeof y != "number" || typeof floor != "number" || map == null){
-			console.log("mark() arguments error");
+	var mark = function(x,y,floor,title){
+		if(arguments.length != 4 || typeof x != "number" || typeof y != "number" || typeof floor != "number" || typeof title != "string" || map == null ){
+			console.log("mark() arguments error:"+typeof title);
 			return;
 		}
 		prev_zoom = map._zoom;
-		map.setView([x,y],5);
+		//map.setView([x,y],5);
 		mflag =1;
-		var marker = L.marker([x,y],{icon:marker_icon});
-		markers[markers.length] = {obj:marker,coord:[x,y],floor:floor}
-		if(current_floor == floor)
+		var marker = L.marker([x,y],{icon:marker_icon,title:title});
+        marker.on("click",on_mark_click);
+		markers[markers.length] = {obj:marker,coord:[x,y],floor:floor,title:title}
+		if(current_floor == floor){
 			marker.addTo(map);
+		}
 	}
 	
 
@@ -128,6 +173,7 @@ var AzrieliMap = function(){
 		for(i=0; i<markers.length; i++){
 			var x = markers[i].coord[0];
 			var y = markers[i].coord[1];
+			var title = markers[i].title;
 			var floor = markers[i].floor;
 			var tmp_x = delta_x;
 			if(x<=-45 || x>=60){
@@ -139,11 +185,14 @@ var AzrieliMap = function(){
 					tmp_x+=1;
 			}
 			
-			var new_marker = L.marker([x+tmp_x, y+delta_y],{icon:marker_icon});
+			var new_marker = L.marker([x+tmp_x, y+delta_y],{icon:marker_icon,title:title});
+            new_marker.on("click",on_mark_click);
 			markers[i].obj.remove();
-			markers[i] = {obj:new_marker,coord:[x,y],floor:floor}
-			if(current_floor == floor)
+			markers[i] = {obj:new_marker,coord:[x,y],floor:floor,title:title}
+			
+			if(current_floor == floor){
 				new_marker.addTo(map);
+			}
 		}
 	}
 	
@@ -153,35 +202,21 @@ var AzrieliMap = function(){
 		mark all destinations for every floor
 		[MISSING] get user location and set view to user location
 	*/
-	var initModule = function(){
+	var initModule = function(l){
+        lang = l;
 		var bounds = L.latLngBounds([-80, -80], [80, 60]);
 		map=L.map("map").setView([0,0],2);
 		map.setMaxBounds(bounds);
 		load_floor(0);
 		map.on('zoomend', update_markers);
-		
-		
-		destinations = { //example and testing
-					"floorm2":[
-						{"name":"C-201","coord":[-65,-5],"closest_waypoint":{"id":13,"x":-65,"y":-5,"z":-2,"adj":{"id":14,"dist":3}}, "hours":null, "services":[null]}
-					],
-					"floorm1":[
-						{"name":"C-101","coord":[-65,-5],"closest_waypoint":{"id":13,"x":-65,"y":-5,"z":-1,"adj":{"id":14,"dist":3}}, "hours":null, "services":[null]}
-					],
-					"floor0":[
-						{"name":"Student Services","coord":[-63,-10],"closest_waypoint":{"id":2,"x":-63,"y":-10,"z":0,"adj":{"id":14,"dist":3}}, "hours":"null", "services":[null]}
-					],
-					"floor1":[
-						{"name":"C105","coord":[-63,-10],"closest_waypoint":{"id":2,"x":-63,"y":-10,"z":1,"adj":{"id":14,"dist":3}}, "hours":null, "services":[null]}
-					],
-					"floor2":[
-						{"name":"C205","coord":[-61.5,-5],"closest_waypoint":{"id":2,"x":-63,"y":-10,"z":2,"adj":{"id":14,"dist":3}}, "hours":null, "services":[null]}
-					],
-					"floor3":[
-						{"name":"Study Room","coord":[-63,-10],"closest_waypoint":{"id":2,"x":-63,"y":-10,"z":3,"adj":{"id":14,"dist":3}}, "hours":null, "services":[null]}
-					]
-				}
 		updateDestinations(destinations);
+        
+        map.on("click",function(e){
+            if(tooltip!=null){
+                tooltip.remove();
+                tooltip = null;
+            }
+        });
 	};
 	
 	
@@ -190,24 +225,26 @@ var AzrieliMap = function(){
 	var updateDestinations = function(JSON_DATA){
 		if(arguments.length != 1 || map == null)
 			return;
+        
+        map.setView([0,0],5);
 		var i;
 		for(i=0; i<JSON_DATA.floorm2.length; i++){
-			mark(JSON_DATA.floorm2[i].coord[0],JSON_DATA.floorm2[i].coord[1],-2);
+			mark(JSON_DATA.floorm2[i].coord[0],JSON_DATA.floorm2[i].coord[1],-2,JSON_DATA.floorm2[i].name);
 		}
 		for(i=0; i<JSON_DATA.floorm1.length; i++){
-			mark(JSON_DATA.floorm1[i].coord[0],JSON_DATA.floorm1[i].coord[1],-1);
+			mark(JSON_DATA.floorm1[i].coord[0],JSON_DATA.floorm1[i].coord[1],-1,JSON_DATA.floorm1[i].name);
 		}
 		for(i=0; i<JSON_DATA.floor0.length; i++){
-			mark(JSON_DATA.floor0[i].coord[0],JSON_DATA.floor0[i].coord[1],0);
+			mark(JSON_DATA.floor0[i].coord[0],JSON_DATA.floor0[i].coord[1],0,JSON_DATA.floor0[i].name);
 		}
 		for(i=0; i<JSON_DATA.floor1.length; i++){
-			mark(JSON_DATA.floor1[i].coord[0],JSON_DATA.floor1[i].coord[1],1);
+			mark(JSON_DATA.floor1[i].coord[0],JSON_DATA.floor1[i].coord[1],1,JSON_DATA.floor1[i].name);
 		}
 		for(i=0; i<JSON_DATA.floor2.length; i++){
-			mark(JSON_DATA.floor2[i].coord[0],JSON_DATA.floor2[i].coord[1],2);
+			mark(JSON_DATA.floor2[i].coord[0],JSON_DATA.floor2[i].coord[1],2,JSON_DATA.floor2[i].name);
 		}
 		for(i=0; i<JSON_DATA.floor3.length; i++){
-			mark(JSON_DATA.floor3[i].coord[0],JSON_DATA.floor3[i].coord[1],3);
+			mark(JSON_DATA.floor3[i].coord[0],JSON_DATA.floor3[i].coord[1],3,JSON_DATA.floor3[i].name);
 		}
 	}
 	
@@ -258,7 +295,6 @@ var AzrieliMap = function(){
 		if(current_floor==-2 && floorm2_path.length>0){
 			for(i=0; i<floorm2_path.length;i++){
 				floorm2_path[i].polyline = L.polyline(floorm2_path[i].path, {color: 'red',weight:10}).addTo(map);
-				console.log("drawn"+floorm2_path[i].path);
 			}
 		}
 		else if(current_floor==-1 && floorm1_path.length>0){
@@ -449,8 +485,11 @@ var AzrieliMap = function(){
 		//removing all previous markers and loading new markers for the floor
 		var i;
 		for(i=0;i<markers.length;i++){
-			if(markers[i].floor == current_floor)
+			if(markers[i].floor == current_floor){
 				markers[i].obj.addTo(map);
+				//markers[i].obj.bindPopup(markers[i].title).openPopup();
+				
+			}
 			else
 				markers[i].obj.remove();
 			
@@ -467,19 +506,14 @@ var AzrieliMap = function(){
 	var print_markers=  function(){
 		console.log(markers);
 	}
-	
+    
 	return { initModule: initModule,
 			load_floor: load_floor,
 			mark:mark,
 			print_markers:print_markers,
-			draw_path:draw_path};
+			draw_path:draw_path,
+			marker_icon:marker_icon,
+			map:map,
+            change_lang:change_lang,
+           log:log};
 }();
-//$(document).ready(function() {AzrieliMap.initModule();});
-
-//get map zoom level -> map._zoom
-//map.on("zoomend", func) -> detects when zoom level changes
-//change marker coordinates -> MARKER.obj.setLatLng([10,10]); 
-//get marker coordinates -> MARKER.obj._latlng.lat OR .lng
-
-//[DRAW PATH ISSUE]
-// DRAW(X,Y) DRAWS (X-3,Y) INSTEAD OF (X,Y)

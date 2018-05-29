@@ -33,3 +33,7 @@
 .button:focus{
     outline:none;
 }
+
+#cmd_dest{
+    border-style: solid;
+}
