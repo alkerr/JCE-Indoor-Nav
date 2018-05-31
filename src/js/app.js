@@ -10,10 +10,10 @@ app.controller('router',function($scope,$translate,localStorageService){
     $scope.load_map_page = function(){
         console.log("loading map");
         $scope.page = "map.html";
-        setTimeout(function(){
+        console.log("calling init");
+         setTimeout(function(){
             AzrieliMap.initModule(localStorageService.get("lang"));
-        }, 1000);;
-        console.log("called");
+         }, 1000);;
         $("#cmd_map").hide();
         $("#cmd_menu").show();
     }
@@ -72,6 +72,21 @@ app.controller('router',function($scope,$translate,localStorageService){
     }
     
     
+    //functions for search
+    $scope.openLeftMenu= function(){
+        document.getElementById("map").style.opacity= "0.5";
+        document.getElementById("leftMenu").style.display = "block";
+    }
+    $scope.closeLeftMenu = function(){
+        document.getElementById("map").style.opacity= "1";
+        document.getElementById("leftMenu").style.display = "none";
+    }
+    $scope.search = function(){
+        console.log("searching..");
+        console.log($('#srch').val());
+    }
+    
+    
     //functions for language page
     $scope.pick_en = function(){
         localStorageService.set("lang","en");
@@ -122,6 +137,7 @@ app.controller('router',function($scope,$translate,localStorageService){
         console.log(index);
     };
     
+
  
 });
 
