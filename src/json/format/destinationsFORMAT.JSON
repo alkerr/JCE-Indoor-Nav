@@ -1,0 +1,20 @@
+{
+	"floorm2":[
+		{"name":"MUST","coord":[x,y],"closest_waypoint":{"id":ID,"x":X,"y":Y,"z":FLOOR,"adj":[{"id":ID,"dist":DISTANCE}]}, "hours":"OPTIONAL", "services":["OPTIONAL"]}
+	],
+	"floorm1":[
+		{"name":"MUST","coord":[x,y],"closest_waypoint":{"id":ID,"x":X,"y":Y,"z":FLOOR,"adj":[{"id":ID,"dist":DISTANCE}]}, "hours":"OPTIONAL", "services":["OPTIONAL"]}
+	],
+	"floor0":[
+		{"name":"MUST","coord":[x,y],"closest_waypoint":{"id":ID,"x":X,"y":Y,"z":FLOOR,"adj":[{"id":ID,"dist":DISTANCE}]}, "hours":"OPTIONAL", "services":["OPTIONAL"]}
+	],
+	"floor1":[
+		{"name":"MUST","coord":[x,y],"closest_waypoint":{"id":ID,"x":X,"y":Y,"z":FLOOR,"adj":[{"id":ID,"dist":DISTANCE}]}, "hours":"OPTIONAL", "services":["OPTIONAL"]}
+	],
+	"floor2":[
+		{"name":"MUST","coord":[x,y],"closest_waypoint":{"id":ID,"x":X,"y":Y,"z":FLOOR,"adj":[{"id":ID,"dist":DISTANCE}]}, "hours":"OPTIONAL", "services":["OPTIONAL"]}
+	],
+	"floor3":[
+		{"name":"MUST","coord":[x,y],"closest_waypoint":{"id":ID,"x":X,"y":Y,"z":FLOOR,"adj":[{"id":ID,"dist":DISTANCE}]}, "hours":"OPTIONAL", "services":["OPTIONAL"]}
+	]
+}

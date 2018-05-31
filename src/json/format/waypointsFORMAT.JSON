@@ -1,0 +1,5 @@
+{
+	"waypoints": [
+		{"id":INDEX,"x":X,"y":Y,"z":FLOOR,"adj":[{"id":ID,"dist":DISTANCE}]}
+	]
+}
