@@ -1,21 +1,20 @@
 {	
 	"floorm2":[
-		{"name":"C-201","coord":[-67,17],"closest_waypoint":null, "hours":null, "services":["classRoom"]},
-		{"name":"C-202","coord":[-65,23],"closest_waypoint":null, "hours":null, "services":["Auditoriums"]},
-		{"name":"C-203","coord":[-65,-3],"closest_waypoint":null, "hours":null, "services":["Auditoriums"]},
-		{"name":"D-201","coord":[59,12],"closest_waypoint":null, "hours":null, "services":["Biotechnology Laboratory"]},
-		{"name":"D-204","coord":[59,5],"closest_waypoint":null, "hours":null, "services":["Laboratory admins"]},
-		{"name":"D-253","coord":[50,5],"closest_waypoint":null, "hours":null, "services":["Laboratory Lockers"]},
-		{"name":"D-253","coord":[59,0],"closest_waypoint":null, "hours":null, "services":["Chemistry & Pharmaceutical Laboratory"]},
-		{"name":"D-212","coord":[50,0],"closest_waypoint":null, "hours":null, "services":["Mechanical Engineering Laboratories"]}
+		{"name":"C-201","coord":[-67,17],"closest_waypoint":null, "hours":null, "services":["ClassRoom"]},
+		{"name":"C-202","coord":[-65,23],"closest_waypoint":null, "hours":null, "services":["Auditorium"]},
+		{"name":"C-203","coord":[-65,-3],"closest_waypoint":null, "hours":null, "services":["Auditorium"]},
+		{"name":"Biotechnology Laboratory","coord":[59,12],"closest_waypoint":null, "hours":null, "services":["D-201"]},
+		{"name":"Laboratory admins","coord":[59,5],"closest_waypoint":null, "hours":null, "services":["D-204"]}, 
+		{"name":"Chemistry & Pharmaceutical Laboratory","coord":[59,0],"closest_waypoint":null, "hours":null, "services":["D-253"]},
+		{"name":"Mechanical Engineering Laboratories","coord":[50,0],"closest_waypoint":null, "hours":null, "services":["D-212"]}
 		
 	],
 	"floorm1":[
-		{"name":"C-101","coord":[-66,20],"closest_waypoint":null, "hours":null, "services":["classRoom"]},
-		{"name":"C-102","coord":[-63,26],"closest_waypoint":null, "hours":null, "services":["classRoom"]},
-		{"name":"C-103","coord":[-63,17],"closest_waypoint":null, "hours":null, "services":["classRoom"]},
-		{"name":"C-104","coord":[-63,8],"closest_waypoint":null, "hours":null, "services":["classRoom"]},
-		{"name":"C-105","coord":[-63,-1],"closest_waypoint":null, "hours":null, "services":["classRoom"]},
+		{"name":"C-101","coord":[-66,20],"closest_waypoint":null, "hours":null, "services":["ClassRoom"]},
+		{"name":"C-102","coord":[-63,26],"closest_waypoint":null, "hours":null, "services":["ClassRoom"]},
+		{"name":"C-103","coord":[-63,17],"closest_waypoint":null, "hours":null, "services":["ClassRoom"]},
+		{"name":"C-104","coord":[-63,8],"closest_waypoint":null, "hours":null, "services":["ClassRoom"]},
+		{"name":"C-105","coord":[-63,-1],"closest_waypoint":null, "hours":null, "services":["ClassRoom"]},
         {"name":"Software Lab", "coord":[-18,27], "closest_waypoint":null, "hours":null, "services":[]}
 	],
 	"floor0":[
@@ -29,7 +28,7 @@
 			"Sharon Moyal: Director"
 			]
 		},
-		{"name":"Administration - Meeting Room","coord":[41,2],"closest_waypoint":null, "hours":null, "services":
+		{"name":"Administration","coord":[41,2],"closest_waypoint":null, "hours":null, "services":
 			[
 			"Dr. Rafi Avraham: CEO",
 			"Prof. Roza Azhari: Chief",
@@ -75,38 +74,38 @@
 			]
 		},
 		{"name":"Finance Department","coord":[25.5,0.35],"closest_waypoint":null, "hours":null, "services":["Finance Department"]},
-		{"name":"001","coord":[19.8,10.4],"closest_waypoint":null, "hours":null, "services":["Mechina classRoom"]},
-		{"name":"002","coord":[23,17],"closest_waypoint":null, "hours":null, "services":["Mechina classRoom"]},
-		{"name":"003","coord":[23,21],"closest_waypoint":null, "hours":null, "services":["Mechina classRoom"]},
-		{"name":"004","coord":[23,29],"closest_waypoint":null, "hours":null, "services":["Mechina classRoom"]},
-		{"name":"005","coord":[26,28],"closest_waypoint":null, "hours":null, "services":["Mechina classRoom"]},
-		{"name":"006","coord":[26,26],"closest_waypoint":null, "hours":null, "services":["Mechina classRoom"]},
-		{"name":"007","coord":[26,12],"closest_waypoint":null, "hours":null, "services":["Mechina classRoom"]},
-		{"name":"008","coord":[26,10],"closest_waypoint":null, "hours":null, "services":["Mechina classRoom"]},
+		{"name":"D001","coord":[19.8,10.4],"closest_waypoint":null, "hours":null, "services":["ClassRoom"]},
+		{"name":"D002","coord":[23,17],"closest_waypoint":null, "hours":null, "services":["ClassRoom"]},
+		{"name":"D003","coord":[23,21],"closest_waypoint":null, "hours":null, "services":["ClassRoom"]},
+		{"name":"D004","coord":[23,29],"closest_waypoint":null, "hours":null, "services":["ClassRoom"]},
+		{"name":"D005","coord":[26,28],"closest_waypoint":null, "hours":null, "services":["ClassRoom"]},
+		{"name":"D006","coord":[26,26],"closest_waypoint":null, "hours":null, "services":["ClassRoom"]},
+		{"name":"D007","coord":[26,12],"closest_waypoint":null, "hours":null, "services":["ClassRoom"]},
+		{"name":"D008","coord":[26,10],"closest_waypoint":null, "hours":null, "services":["ClassRoom"]},
 		
-		{"name":"D009","coord":[-22,-6],"closest_waypoint":null, "hours":null, "services":["Computers classRoom"]},
-		{"name":"D010","coord":[-33,-6],"closest_waypoint":null, "hours":null, "services":["Computers classRoom"]},
+		{"name":"D009","coord":[-22,-6],"closest_waypoint":null, "hours":null, "services":["Computers ClassRoom"]},
+		{"name":"D010","coord":[-33,-6],"closest_waypoint":null, "hours":null, "services":["Computers ClassRoom"]},
 
 		{"name":"Studying room","coord":[-62,-0.5],"closest_waypoint":null, "hours":null, "services":["studing room"]},
-		{"name":"Aguda","coord":[-62,23],"closest_waypoint":null, "hours":null, "services":["Aguda"]},
-		{"name":"C001","coord":[-64.6,20],"closest_waypoint":null, "hours":null, "services":["classRoom"]},
+		{"name":"Student Council","coord":[-62,23],"closest_waypoint":null, "hours":null, "services":["Aguda"]},
+		{"name":"C001","coord":[-64.6,20],"closest_waypoint":null, "hours":null, "services":["ClassRoom"]},
 
-		{"name":"Cafeteria","coord":[-21,3],"closest_waypoint":null, "hours":null, "services":["Mechina classRoom"]}
+		{"name":"Cafeteria","coord":[-21,3],"closest_waypoint":null, "hours":null, "services":["Mechina ClassRoom"]}
 
 
 		
 	],
 	"floor1":[
-		{"name":"C101","coord":[-63.5,26],"closest_waypoint":null, "hours":null, "services":["classRoom"]},
-		{"name":"C102","coord":[-60.5,31],"closest_waypoint":null, "hours":null, "services":["classRoom"]},
-		{"name":"C103","coord":[-60.5,21],"closest_waypoint":null, "hours":null, "services":["classRoom"]},
-		{"name":"C104","coord":[-60.5,14],"closest_waypoint":null, "hours":null, "services":["classRoom"]},
-		{"name":"C105","coord":[-60.5,5.5],"closest_waypoint":null, "hours":null, "services":["classRoom"]},
-		{"name":"C106","coord":[-60.5,-3],"closest_waypoint":null, "hours":null, "services":["classRoom"]},
-		{"name":"C107","coord":[-60.5,-11],"closest_waypoint":null, "hours":null, "services":["classRoom"]},
-		{"name":"C108","coord":[-60.5,-20],"closest_waypoint":null, "hours":null, "services":["classRoom"]},
-		{"name":"C109","coord":[-60.5,-27],"closest_waypoint":null, "hours":null, "services":["classRoom"]},
-		{"name":"C110","coord":[-63,-23],"closest_waypoint":null, "hours":null, "services":["Computer classRoom"]},
+		{"name":"C101","coord":[-63.5,26],"closest_waypoint":null, "hours":null, "services":["ClassRoom"]},
+		{"name":"C102","coord":[-60.5,31],"closest_waypoint":null, "hours":null, "services":["ClassRoom"]},
+		{"name":"C103","coord":[-60.5,21],"closest_waypoint":null, "hours":null, "services":["ClassRoom"]},
+		{"name":"C104","coord":[-60.5,14],"closest_waypoint":null, "hours":null, "services":["ClassRoom"]},
+		{"name":"C105","coord":[-60.5,5.5],"closest_waypoint":null, "hours":null, "services":["ClassRoom"]},
+		{"name":"C106","coord":[-60.5,-3],"closest_waypoint":null, "hours":null, "services":["ClassRoom"]},
+		{"name":"C107","coord":[-60.5,-11],"closest_waypoint":null, "hours":null, "services":["ClassRoom"]},
+		{"name":"C108","coord":[-60.5,-20],"closest_waypoint":null, "hours":null, "services":["ClassRoom"]},
+		{"name":"C109","coord":[-60.5,-27],"closest_waypoint":null, "hours":null, "services":["ClassRoom"]},
+		{"name":"C110","coord":[-63,-23],"closest_waypoint":null, "hours":null, "services":["Computer ClassRoom"]},
 		{"name":"D100","coord":[16,9],"closest_waypoint":null, "hours":null, "services":["Auditorium"]},
 		{"name":"D101 - D114","coord":[19,1],"closest_waypoint":null, "hours":null, "services":
 			[
@@ -138,23 +137,23 @@
 	],
 	"floor2":[
 		{"name":"Secondary Exit/Entrance","coord":[-44,-40],"closest_waypoint":null, "hours":null, "services":["classRoom"]},
-		{"name":"C201","coord":[-64,35],"closest_waypoint":null, "hours":null, "services":["classRoom"]},
-		{"name":"C202","coord":[-60,40],"closest_waypoint":null, "hours":null, "services":["classRoom"]},
-		{"name":"C203","coord":[-60,32],"closest_waypoint":null, "hours":null, "services":["classRoom"]},
-		{"name":"C204","coord":[-60,23],"closest_waypoint":null, "hours":null, "services":["classRoom"]},
-		{"name":"C205","coord":[-60,14],"closest_waypoint":null, "hours":null, "services":["classRoom"]},
-		{"name":"C206","coord":[-60,5],"closest_waypoint":null, "hours":null, "services":["classRoom"]},
-		{"name":"C207","coord":[-60,-4],"closest_waypoint":null, "hours":null, "services":["classRoom"]},
-		{"name":"C208","coord":[-60,-12],"closest_waypoint":null, "hours":null, "services":["classRoom"]},
-		{"name":"C209","coord":[-60,-15],"closest_waypoint":null, "hours":null, "services":["classRoom"]},
-		{"name":"C210","coord":[-63,-15],"closest_waypoint":null, "hours":null, "services":["Computer classRoom"]},
+		{"name":"C201","coord":[-64,35],"closest_waypoint":null, "hours":null, "services":["ClassRoom"]},
+		{"name":"C202","coord":[-60,40],"closest_waypoint":null, "hours":null, "services":["ClassRoom"]},
+		{"name":"C203","coord":[-60,32],"closest_waypoint":null, "hours":null, "services":["ClassRoom"]},
+		{"name":"C204","coord":[-60,23],"closest_waypoint":null, "hours":null, "services":["ClassRoom"]},
+		{"name":"C205","coord":[-60,14],"closest_waypoint":null, "hours":null, "services":["ClassRoom"]},
+		{"name":"C206","coord":[-60,5],"closest_waypoint":null, "hours":null, "services":["ClassRoom"]},
+		{"name":"C207","coord":[-60,-4],"closest_waypoint":null, "hours":null, "services":["ClassRoom"]},
+		{"name":"C208","coord":[-60,-12],"closest_waypoint":null, "hours":null, "services":["ClassRoom"]},
+		{"name":"C209","coord":[-60,-15],"closest_waypoint":null, "hours":null, "services":["ClassRoom"]},
+		{"name":"C210","coord":[-63,-15],"closest_waypoint":null, "hours":null, "services":["Computer ClassRoom"]},
 		
 		{"name":"D200","coord":[19,14],"closest_waypoint":null, "hours":null, "services":["Auditorium"]},
-		{"name":"D201","coord":[21,5],"closest_waypoint":null, "hours":null, "services":["classRoom"]},
-		{"name":"D202","coord":[21,1],"closest_waypoint":null, "hours":null, "services":["classRoom"]},
-		{"name":"D203","coord":[21,-3],"closest_waypoint":null, "hours":null, "services":["classRoom"]},
-		{"name":"D204","coord":[21,-15],"closest_waypoint":null, "hours":null, "services":["classRoom"]},
-		{"name":"Sport Hall","coord":[-10,-31],"closest_waypoint":null, "hours":null, "services":["sport Hall and Salsa class"]}
+		{"name":"D201","coord":[21,5],"closest_waypoint":null, "hours":null, "services":["ClassRoom"]},
+		{"name":"D202","coord":[21,1],"closest_waypoint":null, "hours":null, "services":["ClassRoom"]},
+		{"name":"D203","coord":[21,-3],"closest_waypoint":null, "hours":null, "services":["ClassRoom"]},
+		{"name":"D204","coord":[21,-15],"closest_waypoint":null, "hours":null, "services":["ClassRoom"]},
+		{"name":"Sport Hall","coord":[-10,-31],"closest_waypoint":null, "hours":null, "services":["Basketball, salsa ..."]}
 
 	],
 	"floor3":[
@@ -172,10 +171,10 @@
 		
 		{"name":"C358","coord":[-64,-23],"closest_waypoint":null, "hours":null, "services":["Floor 3 & Cleaners manager"]},
 		{"name":"D300","coord":[18,9],"closest_waypoint":null, "hours":null, "services":["Auditorium"]},
-		{"name":"D301","coord":[19,4],"closest_waypoint":null, "hours":null, "services":["classRoom"]},
-		{"name":"D302","coord":[19,-3],"closest_waypoint":null, "hours":null, "services":["classRoom"]},
-		{"name":"D303","coord":[19,-10],"closest_waypoint":null, "hours":null, "services":["classRoom"]},
-		{"name":"D304","coord":[19,-18],"closest_waypoint":null, "hours":null, "services":["classRoom"]},
+		{"name":"D301","coord":[19,4],"closest_waypoint":null, "hours":null, "services":["ClassRoom"]},
+		{"name":"D302","coord":[19,-3],"closest_waypoint":null, "hours":null, "services":["ClassRoom"]},
+		{"name":"D303","coord":[19,-10],"closest_waypoint":null, "hours":null, "services":["ClassRoom"]},
+		{"name":"D304","coord":[19,-18],"closest_waypoint":null, "hours":null, "services":["ClassRoom"]},
 		{"name":"Advanced Materials Laboratory","coord":[25,9],"closest_waypoint":null, "hours":null, "services":
 		[
 		"David Avishi: Industrial & Management Laboratories Manager",
