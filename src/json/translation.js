@@ -187,7 +187,9 @@ var english = {
 	'Electronics Laboratory':'Electronics Laboratory',
 	'Electricity and Electronics Laboratory: Laboratory':'Electricity and Electronics Laboratory: Laboratory',
 	'David Avishi: Industrial & Management Laboratories Manager':'David Avishi: Industrial & Management Laboratories Manager',
-	'Ana Graph: Electricity and Electronics Laboratories Manager':'Ana Graph: Electricity and Electronics Laboratories Manager'
+	'Ana Graph: Electricity and Electronics Laboratories Manager':'Ana Graph: Electricity and Electronics Laboratories Manager',
+	'Navigate':'Navigate',
+	'More Info':'More Info'
 };
 
 var hebrew = {
@@ -378,7 +380,9 @@ var hebrew = {
 	'Electronics Laboratory':'מעבדת תקשורת ואלקטרוניקה',
 	'Electricity and Electronics Laboratory: Laboratory':'מעבדת הנדסת חשמל ואלקטרוניקה',
 	'David Avishi: Industrial & Management Laboratories Manager':'דוד אבישי -  מנהל מעבדת תעשייה וניהול / מעבדת תעשייה וניהול',
-	'Ana Graph: Electricity and Electronics Laboratories Manager':'אנה גרף מנהלת מעבדת אלקטרוניקה'
+	'Ana Graph: Electricity and Electronics Laboratories Manager':'אנה גרף מנהלת מעבדת אלקטרוניקה',
+	'Navigate':'נווט',
+	'More Info':'עוד מידע'
 }
 var arabic = {
     'MAP':'خريطة',
@@ -568,5 +572,7 @@ var arabic = {
 	'Electronics Laboratory':'مختبر الاتصالات والاكلترونيات',
 	'Electricity and Electronics Laboratory: Laboratory':'مختبر هندسة الكهربا والالكترونيات',
 	'David Avishi: Industrial & Management Laboratories Manager':'دافيد افيشاي  - مدير مختبر هندسة الصناعة والادارة  / مختبر هندسة الصناعة والادارة',
-	'Ana Graph: Electricity and Electronics Laboratories Manager':'آنا جيرف -  مديرة مختبر الالكترونيات'
+	'Ana Graph: Electricity and Electronics Laboratories Manager':'آنا جيرف -  مديرة مختبر الالكترونيات',
+	'Navigate':'توجيه',
+	'More Info':'مزيد من المعلومات'
 };
