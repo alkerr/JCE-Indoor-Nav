@@ -1,4 +1,4 @@
-destinations = {	
+destinations = {
 	"floorm2":[
 		{"name":"C-201","coord":[-67,17],"closest_waypoint":null, "hours":null, "services":["ClassRoom"]},
 		{"name":"C-202","coord":[-65,23],"closest_waypoint":null, "hours":null, "services":["Auditorium"]},
@@ -20,7 +20,20 @@ destinations = {
 	"floor0":[
 		{"name":"Registration and Consulting Center","coord":[-62,26],"closest_waypoint":null, "hours":"Sun - Thu  09:00 - 19:00", "services":
 			[
-			"Dvorit Freak Shim-Tov: Head of Staff ",
+			"Regestration for engineering studies at the Azraeli Jerusalem College of Engineering",
+			"You can arrange a consultation meeting with an academic advisor and receive information about the various engineering studies that we offer:",
+			"Industrial Engineering and Management",
+			"Electrical Engineering",
+			"Software Engineering",
+			"Advanced Materials Engineering",
+			"Pharmaceutical Engineering",
+			"Mechanical Engineering",
+			"Civil engineering in cooperation with the Technion",
+			"Pre - academic preparatory courses",
+			"M.Sc. in Software Engineering",
+			"M.a. in technological entrepreneurship",
+			"<br>",
+			"Dvorit Freak Shim-Tov: Head of Staff",
 			"Sharon Turjamen: Academic Advisor",
 			"Rotem Rimon: Academic Advisor",
 			"Chirot Chen: Academic Advisor",
@@ -30,6 +43,8 @@ destinations = {
 		},
 		{"name":"Administration","coord":[41,2],"closest_waypoint":null, "hours":null, "services":
 			[
+			"The Administration handles all the academic issues",
+			"It is responsible for determining the rules and procedures relating to studies at Azrieli College for Engineering Studies.",
 			"Dr. Rafi Avraham: CEO",
 			"Prof. Roza Azhari: Chief",
 			"Hadas Tzur: Rector",
@@ -49,6 +64,9 @@ destinations = {
 		{"name":"Student Administration","coord":[-62,-13],"closest_waypoint":null, "hours": "Sun: 8:30 - 12:00 / 13:00 - 19:00\n Mon -Thu:8:30 - 12:00 / 13:00 - 15:00",
 			"services":
 			[
+			"Student Adminstration is the central authority that is responsible for dealing with students issues.",
+			"Available services: Social Assistance and Involvement Unit, Student Counseling Services, Unit for Equal Opportunities for the Minorities, Career Guidance, Student Council Activities, Empowerment and Technological Entrepreneurship.",
+			"<br>",
 			"Gili Zigdon: Projects Coordinator",
 			"Eden Dar: Assistance and Social Involvement” Section",
 			"Dana Levi: Mechina Coordinator",
@@ -73,7 +91,7 @@ destinations = {
 			"Neama Lintser: Mechina Director"
 			]
 		},
-		{"name":"Finance Department","coord":[25.5,0.35],"closest_waypoint":null, "hours":null, "services":["Finance Department"]},
+		{"name":"Finance Department","coord":[25.5,0.35],"closest_waypoint":null, "hours":null, "services":[]},
 		{"name":"D001","coord":[19.8,10.4],"closest_waypoint":null, "hours":null, "services":["ClassRoom"]},
 		{"name":"D002","coord":[23,17],"closest_waypoint":null, "hours":null, "services":["ClassRoom"]},
 		{"name":"D003","coord":[23,21],"closest_waypoint":null, "hours":null, "services":["ClassRoom"]},
@@ -86,11 +104,11 @@ destinations = {
 		{"name":"D009","coord":[-22,-6],"closest_waypoint":null, "hours":null, "services":["Computers ClassRoom"]},
 		{"name":"D010","coord":[-33,-6],"closest_waypoint":null, "hours":null, "services":["Computers ClassRoom"]},
 
-		{"name":"Studying room","coord":[-62,-0.5],"closest_waypoint":null, "hours":null, "services":["studing room"]},
-		{"name":"Student Council","coord":[-62,23],"closest_waypoint":null, "hours":null, "services":["Aguda"]},
+		{"name":"Studying room","coord":[-62,-0.5],"closest_waypoint":null, "hours":null, "services":["Students special hall for studying."]},
+		{"name":"Student Council","coord":[-62,23],"closest_waypoint":null, "hours":null, "services":["The Student Council represents the students in the college, and works in cooperation with the college."]},
 		{"name":"C001","coord":[-64.6,20],"closest_waypoint":null, "hours":null, "services":["ClassRoom"]},
 
-		{"name":"Cafeteria","coord":[-21,3],"closest_waypoint":null, "hours":null, "services":["Mechina ClassRoom"]}
+		{"name":"Cafeteria","coord":[-21,3],"closest_waypoint":null, "hours":null, "services":[]}
 
 
 		
@@ -109,6 +127,8 @@ destinations = {
 		{"name":"D100","coord":[16,9],"closest_waypoint":null, "hours":null, "services":["Auditorium"]},
 		{"name":"D101 - D114","coord":[19,1],"closest_waypoint":null, "hours":null, "services":
 			[
+			"Lecturers and Head of Departments offices:",
+			"<br>",
 			"Prof Itan Manor: Head of the Advanced Materials Engineering Department",
 			"Dr. Benjamin Broski: Industrial & Management Engineering",
 			"Dr. Yael Latsder: Advanced Material Engineering",
@@ -129,14 +149,12 @@ destinations = {
 			"Meeting Room",
 			"Shimrit Tzur David: Software Engineering",
 			"Dr. Reuvan Igal: Software Engineering"
-			]
-			},
-			{"name":"English & Physics Department","coord":[46,5],"closest_waypoint":null, "hours":null, "services":[null]},
-			{"name":"Atobe","coord":[17,-40],"closest_waypoint":null, "hours":null, "services":[null]}
-
+		]},
+		{"name":"English & Physics Department","coord":[46,5],"closest_waypoint":null, "hours":null, "services":["Depratments for the Head of English and Physics course"]},
+		{"name":"Atobe","coord":[17,-40],"closest_waypoint":null, "hours":null, "services":["Azrieli College of Engineering Startup Accelerator gives you the chance of a lifetime to engineer your dream into reality and build your own startup company with our help."]}
 	],
 	"floor2":[
-		{"name":"Secondary Exit/Entrance","coord":[-44,-40],"closest_waypoint":null, "hours":null, "services":["classRoom"]},
+		{"name":"Secondary Exit/Entrance","coord":[-44,-40],"closest_waypoint":null, "hours":null, "services":[]},
 		{"name":"C201","coord":[-64,35],"closest_waypoint":null, "hours":null, "services":["ClassRoom"]},
 		{"name":"C202","coord":[-60,40],"closest_waypoint":null, "hours":null, "services":["ClassRoom"]},
 		{"name":"C203","coord":[-60,32],"closest_waypoint":null, "hours":null, "services":["ClassRoom"]},
@@ -153,21 +171,20 @@ destinations = {
 		{"name":"D202","coord":[21,1],"closest_waypoint":null, "hours":null, "services":["ClassRoom"]},
 		{"name":"D203","coord":[21,-3],"closest_waypoint":null, "hours":null, "services":["ClassRoom"]},
 		{"name":"D204","coord":[21,-15],"closest_waypoint":null, "hours":null, "services":["ClassRoom"]},
-		{"name":"Sport Hall","coord":[-10,-31],"closest_waypoint":null, "hours":null, "services":["Basketball, salsa ..."]}
+		{"name":"Sport Hall","coord":[-10,-31],"closest_waypoint":null, "hours":null, "services":["Basketball, Salsa ..."]}
 
 	],
 	"floor3":[
 		{"name":"Library","coord":[-62,8],"closest_waypoint":null, 
 		"hours":"Sun:10:00 - 20:00\n Mon 10:00 - 20:00\n Tus:14:00 - 20:00\n Wed:10:00 - 20:00\n Thu:10:00 - 20:00\n Fri:Closed",
-	     "services":["Carol Katz: Librarian ","Books"]
-		},
+	    "services":["The Academic books that are needed during the engineer studies", "Carol Katz: Librarian"]},
 		{"name":"C310","coord":[-65,-20],"closest_waypoint":null, "hours":null, "services":["Computer Room"]},
 		{"name":"C302","coord":[-62,36],"closest_waypoint":null, "hours":null, "services":["Computer Room"]},
-		{"name":"C301","coord":[-65,29],"closest_waypoint":null, "hours":null, "services":["classRoom"]},
+		{"name":"C301","coord":[-65,29],"closest_waypoint":null, "hours":null, "services":["ClassRoom"]},
 		{"name":"C307","coord":[-57,-18],"closest_waypoint":null, "hours":null, "services":["Conference Room (Computer Room)"]},
 		{"name":"C306","coord":[-60,-16],"closest_waypoint":null, "hours":null, "services":["Conference Room"]},
 		{"name":"C305","coord":[-60,-17],"closest_waypoint":null, "hours":null, "services":["Conference Room"]},
-		{"name":"C308","coord":[-62,-21],"closest_waypoint":null, "hours":null, "services":["Resting/Sleeping Room"]},
+		{"name":"Resting/Sleeping Room","coord":[-62,-21],"closest_waypoint":null, "hours":null, "services":["Sleeping Room dedicated to the Azraeli Students"]},
 		
 		{"name":"C358","coord":[-64,-23],"closest_waypoint":null, "hours":null, "services":["Floor 3 & Cleaners manager"]},
 		{"name":"D300","coord":[18,9],"closest_waypoint":null, "hours":null, "services":["Auditorium"]},
@@ -177,10 +194,10 @@ destinations = {
 		{"name":"D304","coord":[19,-18],"closest_waypoint":null, "hours":null, "services":["ClassRoom"]},
 		{"name":"Advanced Materials Laboratory","coord":[25,9],"closest_waypoint":null, "hours":null, "services":
 		[
-		"David Avishi: Industrial & Management Laboratories Manager",
 		"VLSI / ASIC: Laboratories",
 		"Electronics Laboratory" ,
 		"Electricity and Electronics Laboratory: Laboratory",
+		"David Avishi: Industrial & Management Laboratories Manager",
 		"Ana Graph: Electricity and Electronics Laboratories Manager"
 		]}
 	]
