@@ -760,4 +760,4 @@ var AzrieliMap = function(){
 			watch_location:watch_location,
            log:log};
 }();
-$(document).ready(AzrieliMap.initModule('en'));
+$(document).ready(function() {AzrieliMap.initModule();});
