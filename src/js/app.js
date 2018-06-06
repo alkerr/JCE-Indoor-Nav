@@ -19,10 +19,13 @@ app.controller('router',function($scope,$translate,localStorageService){
     }
     $scope.load_menu_page = function(){
         $scope.page = "menu.html";
+        
+        $("#menu_dest_lst").show();
+        $("#menu_dest_view").empty();
+        $("#menu_cmd_nav").hide();
+        
         $("#cmd_menu").hide();
         $("#cmd_map").show();
-        
-    
      }
 
     $scope.getPage = function(){
@@ -114,6 +117,8 @@ app.controller('router',function($scope,$translate,localStorageService){
     //functions for menu page
     $scope.destinations=destinations;
     $scope.view_dest = function(floor,index){
+        $("#menu_dest_lst").hide();
+        $("#menu_cmd_nav").show();
         if(floor==-2){
             console.log(destinations.floorm2[index].name);
         }
@@ -122,7 +127,15 @@ app.controller('router',function($scope,$translate,localStorageService){
             
         }
         else if(floor == 0){
-            console.log(destinations.floor0[index].name);
+            $("#menu_dest_view").append($translate.instant(destinations.floor0[index].name));
+            $("#menu_dest_view").append("<br>");
+            var i;
+            for(i=0;i<destinations.floor0[index].services.length; i++){
+                
+                $("#menu_dest_view").append($translate.instant(destinations.floor0[index].services[i]));
+                $("#menu_dest_view").append("<br>");
+            }
+           
         }
         else if(floor == 1){
             console.log(destinations.floor1[index].name);
@@ -133,9 +146,10 @@ app.controller('router',function($scope,$translate,localStorageService){
         else if(floor == 3){
             console.log(destinations.floor3[index].name);
         }
-        
-        console.log(index);
+        $("#cmd_map").hide();
+        $("#cmd_menu").show();
     };
+    
     
 
  
