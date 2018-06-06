@@ -723,8 +723,8 @@ var AzrieliMap = function(){
 			var acc = p.coords.accuracy-166;
 			if(acc<0)
 				acc*=-1;
-			if(acc==0)
-				acc= 1;
+			else
+				acc=1;
 			console.log("ACC = "+acc);
 			$("#txt").append("ACC = "+acc);
 			var radius = 4*acc;
