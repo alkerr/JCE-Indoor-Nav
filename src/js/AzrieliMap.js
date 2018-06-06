@@ -734,6 +734,8 @@ var AzrieliMap = function(){
 			var circle=L.circle(coords, {color: 'red',"radius": radius*scale2,opacity:0.5}).bindTooltip("your location").addTo(map);
 			console.log(circle);
 			location_circle = circle;
+			map.setView([coords.lat,coords.lng],4);
+			
 		}
 		if (navigator.geolocation) {
 			navigator.geolocation.watchPosition(logPosition);
@@ -760,4 +762,4 @@ var AzrieliMap = function(){
 			watch_location:watch_location,
            log:log};
 }();
-$(document).ready(function() {AzrieliMap.initModule();});
+$(document).ready(function() {AzrieliMap.initModule(); AzrieliMap.watch_location();});
