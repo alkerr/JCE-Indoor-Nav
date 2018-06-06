@@ -717,6 +717,7 @@ var AzrieliMap = function(){
 	
 	var watch_location = function(){
 		var logPosition = function(p){
+			$("#txt").empty();
 			console.log("logging p..");
 			console.log(p);
 			var acc = p.coords.accuracy-166;
@@ -725,6 +726,7 @@ var AzrieliMap = function(){
 			if(acc==0)
 				acc= 1;
 			console.log("ACC = "+acc);
+			$("#txt").append("ACC = "+acc);
 			var radius = 4*acc;
 			coords=GeoService.gpsToMap(p.coords.latitude,p.coords.longitude,current_floor);
 			console.log(coords);
