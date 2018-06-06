@@ -508,6 +508,7 @@ var GeoService = function () {
 			 calcMapDistortion();
 			 calcFloorOffset();
 		}
+		console.log("translating "+lat+" "+lng);
 		
 		var temp=map.project({"lat":lat,"lng":lng},18);
 
@@ -554,6 +555,7 @@ var GeoService = function () {
 		prvLng=lng;
 		
 		group2.clearLayers();
+		
 		coods=gpsToMap(lat,lng,current_floor);
 
 		var scale2=Math.abs(Math.cos(coods.lat*Math.PI/180));
@@ -828,6 +830,7 @@ var textFile = null,
 			GeoService.drawUser(crd.latitude,crd.longitude,crd.accuracy);
 			
 			var mapLoc=GeoService.gpsToMap(crd.latitude,crd.longitude,current_floor);
+			console.log(mapLoc);
 			var closestIndex=GeoService.getClosestIndex(mapLoc.lat,mapLoc.lng);
 			
 			$("#toNodeId").val((Math.round(crd.latitude * 1000000) / 1000000)+", "+(Math.round(crd.longitude * 1000000) / 1000000)+
