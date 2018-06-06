@@ -720,15 +720,15 @@ var AzrieliMap = function(){
 			$("#txt").empty();
 			console.log("logging p..");
 			console.log(p);
-			var acc = p.coords.accuracy-166;
+			var acc = p.coords.accuracy-200;
 			if(acc<0)
 				acc*=-1;
 			else
 				acc=1;
 			console.log();
 			console.log("ACC = "+acc);
-			$("#txt").append("ACC = "+acc+"  accuracy = "+p.coords.accuracy);
-			var radius = 4*acc;
+			$("#txt").append("ACC = "+acc+"  accuracy = "+p.coords.accuracy+" LATEST");
+			var radius = 4*(acc/10);
 			coords=GeoService.gpsToMap(p.coords.latitude,p.coords.longitude,current_floor);
 			console.log(coords);
 
