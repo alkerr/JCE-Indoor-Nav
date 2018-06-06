@@ -725,8 +725,9 @@ var AzrieliMap = function(){
 				acc*=-1;
 			else
 				acc=1;
+			console.log();
 			console.log("ACC = "+acc);
-			$("#txt").append("ACC = "+acc);
+			$("#txt").append("ACC = "+acc+"  accuracy = "+p.coords.accuracy);
 			var radius = 4*acc;
 			coords=GeoService.gpsToMap(p.coords.latitude,p.coords.longitude,current_floor);
 			console.log(coords);
