@@ -719,19 +719,27 @@ var AzrieliMap = function(){
 		var logPosition = function(p){
 			console.log("logging p..");
 			console.log(p);
-			
-			var radius =4;
+			var acc = p.coords.accuracy-166;
+			if(acc<0)
+				acc*=-1;
+			if(acc==0)
+				acc= 1;
+			console.log("ACC = "+acc);
+			var radius = 4*acc;
 			coords=GeoService.gpsToMap(p.coords.latitude,p.coords.longitude,current_floor);
 			console.log(coords);
 
 			var scale2=Math.abs(Math.cos(coords.lat*Math.PI/180));
+			console.log("scale2= "+scale2);
 			radius*=50000;
 		
 			if(location_circle){
 				location_circle.remove();
 				location_circle=null;
 			}
-			var circle=L.circle(coords, {color: 'red',"radius": radius*scale2,opacity:0.5}).bindTooltip("your location").addTo(map);
+			radius*=scale2;
+			console.log("radius= "+radius)
+			var circle=L.circle(coords, {color: 'red',"radius":radius ,opacity:0.5}).bindTooltip("your location").addTo(map);
 			console.log(circle);
 			location_circle = circle;
 			map.setView([coords.lat,coords.lng],4);
