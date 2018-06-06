@@ -35,6 +35,212 @@ var routingService = function(){
 
 
 
+var GeoService = function () {
+
+	function getTileURL(lat, lon, zoom=8) {
+		var xtile = parseInt(Math.floor( (lon + 180) / 360 * (1<<zoom) ));
+		var ytile = parseInt(Math.floor( (1 - Math.log(Math.tan(lat* Math.PI / 180) + 1 / Math.cos(lat* Math.PI / 180)) / Math.PI) / 2 * (1<<zoom) ));
+		return {"x":xtile,"y":ytile};
+	}
+	
+	function getClosestIndex(lat, lng,curFloor=current_floor,graph=data.waypoints) {
+		var clickedPx=map.project({"lat":lat,"lng":lng},5);
+		var minDist=-1,minIndex;
+		for(var i=0;i<graph.length;i++){
+			if(graph[i].z!=curFloor){
+				continue;			
+			}
+			var curPx=map.project({"lat":graph[i].x,"lng":graph[i].y},5);
+			
+			var xdif = curPx.x - clickedPx.x;
+			var ydif = curPx.y - clickedPx.y;
+			var distsq=xdif * xdif + ydif * ydif;
+			var distance=Math.sqrt(distsq);
+			
+			if(minDist==-1||distance<minDist){
+				minDist=distance;
+				minIndex=graph[i].id;
+			}
+		}
+		return minIndex;
+	}
+	function getClosestNode(lat, lng,curFloor=current_floor,graph=data.waypoints) {
+		return GraphMaker.getNode(graph,getClosestIndex(lat, lng,curFloor,graph));
+	}
+	
+	function getDistance(lat, lng,node,curFloor=current_floor) {
+		if(node.z!=curFloor){
+			return 10000;	//map is 8192 pxels long		
+			console.log("diffrent floor");
+		}
+		var clickedPx=map.project({"lat":lat,"lng":lng},5);
+		var curPx=map.project({"lat":node.x,"lng":node.y},5);
+		
+		var xdif = curPx.x - clickedPx.x;
+		var ydif = curPx.y - clickedPx.y;
+		var distsq=xdif * xdif + ydif * ydif;
+		var distance=Math.sqrt(distsq);
+		
+		return distance;
+	}
+	
+	
+
+
+	var rotDegree=0;
+	var mapDistortion=null;	
+	function calcMapDistortion(){
+
+		var topCollege=map.project({"lat":71.552741,"lng":28.652344},5);
+		var bottomCollege=map.project({"lat":-55.329144,"lng":-36.386719},5);	
+		var topGps =map.project({"lat":31.769834,"lng":35.194080},18);
+		var btmGps=map.project({"lat":31.768456,"lng":35.193439},18);
+		
+		var newTop=rotate(4096,4096,topCollege.x,topCollege.y,rotDegree);
+		var newBtm=rotate(4096,4096,bottomCollege.x,bottomCollege.y,rotDegree);
+
+		var xfactor=(newTop[0]-newBtm[0])/(topGps.x-btmGps.x);
+		var yfactor=(newTop[1]-newBtm[1])/(topGps.y-btmGps.y);
+		
+		var centerx=topGps.x-((4743-4096)/xfactor);
+		var centery=topGps.y-((1729-4096)/yfactor);
+		
+		mapDistortion={"xFactor":xfactor,"yFactor":yfactor,"centerX":centerx,"centerY":centery};
+	
+	}
+	
+	
+	//offsets stairs outsiede
+	//{"waypoints":[{"id":1,"x":3.6888551431470478,"y":25.488281250000004,"z":0,"adj":{"2":5.774783946559172}},{"id":2,"x":5.834616165610059,"y":30.849609375000004,"z":1,"adj":{"1":5.774783946559172,"3":9.260702836361869}},{"id":3,"x":8.320212289522944,"y":39.77050781250001,"z":2,"adj":{"2":9.260702836361869,"4":5.041118279117637}},{"id":4,"x":6.620957270326323,"y":35.02441406250001,"z":3,"adj":{"3":5.041118279117637,"5":9.619990790860623}},{"id":5,"x":5.353521355337334,"y":25.488281250000004,"z":-1,"adj":{"4":9.619990790860623,"6":2.3653255993520763}},{"id":6,"x":4.477856485570586,"y":23.291015625000004,"z":-2,"adj":{"5":2.3653255993520763}}]}
+	
+	//offset  stairs inside
+	//{"waypoints":[{"id":1,"x":-70.78690984117928,"y":-3.9550781250000004,"z":-2,"adj":{"2":3.211786775961042}},{"id":2,"x":-69.50376519563684,"y":-1.0107421875000002,"z":-1,"adj":{"1":3.211786775961042,"3":1.0596185785393852}},{"id":3,"x":-68.75231494434473,"y":-0.26367187500000006,"z":0,"adj":{"2":1.0596185785393852,"4":6.01724164432596}},{"id":4,"x":-67.15289820820027,"y":5.537109375000001,"z":1,"adj":{"3":6.01724164432596,"5":8.265137517084996}},{"id":5,"x":-67.39059859150741,"y":13.798828125000002,"z":2,"adj":{"4":8.265137517084996,"6":4.9980827785379}},{"id":6,"x":-68.47992564291268,"y":8.920898437500002,"z":3,"adj":{"5":4.9980827785379}}]}
+	
+	
+	//elevator
+	//{"waypoints":[{"id":1,"x":12.254127737657381,"y":-3.6914062500000004,"z":-2,"adj":{"2":2.886826277146298}},{"id":2,"x":13.32548488559795,"y":-1.0107421875000002,"z":-1,"adj":{"1":2.886826277146298,"3":2.1216127144039914}},{"id":3,"x":11.43695521614319,"y":-0.0439453125,"z":0,"adj":{"2":2.1216127144039914,"4":6.087409567047312}},{"id":4,"x":13.539200668930816,"y":5.6689453125,"z":1,"adj":{"3":6.087409567047312,"5":8.567292823145692}},{"id":5,"x":15.961329081596647,"y":13.886718750000002,"z":2,"adj":{"4":8.567292823145692,"6":5.224967866395595}},{"id":6,"x":14.477234210156519,"y":8.876953125000002,"z":3,"adj":{"5":5.224967866395595}}]}
+
+	//main entrance 
+	//{"waypoints":[{"id":1,"x":73.47848507889992,"y":26.674804687500004,"z":-2,"adj":{"2":1.9224363786602319}},{"id":2,"x":73.12494524712693,"y":28.564453125000004,"z":-1,"adj":{"1":1.9224363786602319,"3":1.5861153407433761}},{"id":3,"x":71.53882990638355,"y":28.564453125000004,"z":0,"adj":{"2":1.5861153407433761,"4":5.450648426516857}},{"id":4,"x":71.66366293141732,"y":34.01367187500001,"z":1,"adj":{"3":5.450648426516857,"5":9.056793740084862}},{"id":5,"x":73.22669969306126,"y":42.93457031250001,"z":2,"adj":{"4":9.056793740084862,"6":4.614887941703598}},{"id":6,"x":73.15043991163012,"y":38.3203125,"z":3,"adj":{"5":4.614887941703598}}]}
+	var floorOffset=[];
+	var floorScale=[];
+	function calcFloorOffset(){
+	floorScale=[];
+	floorOffset=[];
+		var commonNodes=[{"id":1,"x":12.254127737657381,"y":-3.6914062500000004,"z":-2,"adj":{"2":2.886826277146298}},{"id":2,"x":13.32548488559795,"y":-1.0107421875000002,"z":-1,"adj":{"1":2.886826277146298,"3":2.1216127144039914}},{"id":3,"x":11.43695521614319,"y":-0.0439453125,"z":0,"adj":{"2":2.1216127144039914,"4":6.087409567047312}},{"id":4,"x":13.539200668930816,"y":5.6689453125,"z":1,"adj":{"3":6.087409567047312,"5":8.567292823145692}},{"id":5,"x":15.961329081596647,"y":13.886718750000002,"z":2,"adj":{"4":8.567292823145692,"6":5.224967866395595}},{"id":6,"x":14.477234210156519,"y":8.876953125000002,"z":3,"adj":{"5":5.224967866395595}}];
+		
+
+		var center =map.project({"lat":commonNodes[2].x,"lng":commonNodes[2].y},5);
+		 
+
+	commonNodes2=[{"id":1,"x":73.47848507889992,"y":26.674804687500004,"z":-2,"adj":{"2":1.9224363786602319}},{"id":2,"x":73.12494524712693,"y":28.564453125000004,"z":-1,"adj":{"1":1.9224363786602319,"3":1.5861153407433761}},{"id":3,"x":71.53882990638355,"y":28.564453125000004,"z":0,"adj":{"2":1.5861153407433761,"4":5.450648426516857}},{"id":4,"x":71.66366293141732,"y":34.01367187500001,"z":1,"adj":{"3":5.450648426516857,"5":9.056793740084862}},{"id":5,"x":73.22669969306126,"y":42.93457031250001,"z":2,"adj":{"4":9.056793740084862,"6":4.614887941703598}},{"id":6,"x":73.15043991163012,"y":38.3203125,"z":3,"adj":{"5":4.614887941703598}}];
+	
+		var center2 =map.project({"lat":commonNodes2[2].x,"lng":commonNodes2[2].y},5);
+		for(var i=0;i<6;i++){
+			var current= map.project({"lat":commonNodes[i].x,"lng":commonNodes[i].y},5);
+			var current2= map.project({"lat":commonNodes2[i].x,"lng":commonNodes2[i].y},5);
+			floorScale.push([(current2.x-current.x)/(center2.x-center.x)
+			,(current2.y-current.y)/(center2.y-center.y)]);
+			
+		}
+		
+		for(var i=0;i<6;i++){
+			var current= map.project({"lat":commonNodes[i].x,"lng":commonNodes[i].y},5);
+			floorOffset.push([(center.x-current.x)/floorScale[i][0],(center.y-current.y)/floorScale[i][1]]);
+			
+		}
+		
+	
+	}
+	
+
+	function gpsToMap(lat,lng,floor){
+
+		if(mapDistortion==null){
+			 calcMapDistortion();
+			 calcFloorOffset();
+		}
+		
+		var temp=map.project({"lat":lat,"lng":lng},18);
+
+		temp.x-=mapDistortion.centerX;
+		temp.y-=mapDistortion.centerY;
+		
+		temp.x*=mapDistortion.xFactor;
+		temp.y*=mapDistortion.yFactor;
+		
+		temp.x*=floorScale[floor+2][0];
+		temp.y*=floorScale[floor+2][1];
+		temp.x-=floorOffset[floor+2][0];
+		temp.y-=floorOffset[floor+2][1];
+		
+		temp.x+=4096;
+		temp.y+=4096;
+		
+
+		
+		
+		var rot=rotate(4743,1729,temp.x,temp.y,-rotDegree);
+		temp.x=rot[0];
+		temp.y=rot[1];
+		
+
+		var coods=map.unproject(temp, 5);
+
+		return coods;
+		
+	}
+	var  group2 = L.layerGroup();
+	var prvLat=null,prvLng=null;
+	function drawUser(lat=null,lng=null,current_floor,radius=4){
+	
+		if(lat==null||lng==null){
+			if(prvLat==null||prvLng==null)
+				return;
+			else{
+				lat=prvLat;
+				lng=prvLng;
+			}
+		}
+		prvLat=lat;
+		prvLng=lng;
+		
+		group2.clearLayers();
+		coods=gpsToMap(lat,lng,current_floor);
+
+		var scale2=Math.abs(Math.cos(coods.lat*Math.PI/180));
+		radius*=50000;
+		
+		var circle=L.circle(coods, {color: 'red',"radius": radius*scale2,opacity:0.5}).bindTooltip("your location");
+		group2.addLayer(circle);
+		
+		group2.addTo(map);
+
+	}
+	
+
+function rotate(cx, cy, x, y, angle) {
+    var radians = (Math.PI / 180) * angle,
+        cos = Math.cos(radians),
+        sin = Math.sin(radians),
+        nx = (cos * (x - cx)) + (sin * (y - cy)) + cx,
+        ny = (cos * (y - cy)) - (sin * (x - cx)) + cy;
+    return [nx, ny];
+}
+
+
+	return {
+		gpsToMap:gpsToMap,
+		getClosestNode:getClosestNode,
+		getClosestIndex:getClosestIndex,
+		drawUser:drawUser
+	}
+
+}();
+
+
+
+
 /** used to translate the marker descriptions */
 var translate = function(lang,str){
     var obj = null;
@@ -62,12 +268,15 @@ Features:
 	-Destinations available marked on each floor
 	-Navigation path, the map draws a navigation path when given a set of valid way points through multi floor using the method draw_path()
 */
+var map=null; //map object
 var AzrieliMap = function(){
 	// ---------------------------------- [VARIABLES] -----------------------------------------------------------
-	var map=null; //map object
+	
 	var current_floor = null; //current floor (integer)
 	var tooltip= null;
     var lang = 'en';
+	
+	var location_circle = null;
     
 	var marker_icon = L.icon({ //icon object for the markers
 		iconUrl: 'img/marker.png',
@@ -497,15 +706,48 @@ var AzrieliMap = function(){
 		
 		update_path(prev_floor);
 		
+	};
+	
+	
+	/*navigate(): draws a path with appropriate instructions for the user to navigate */
+    //expects from and to way points id
+    var navigate = function(from, to){
+        
+    };
+	
+	var watch_location = function(){
+		var logPosition = function(p){
+			console.log("logging p..");
+			console.log(p);
+			
+			var radius =4;
+			coords=GeoService.gpsToMap(p.coords.latitude,p.coords.longitude,current_floor);
+			console.log(coords);
+
+			var scale2=Math.abs(Math.cos(coords.lat*Math.PI/180));
+			radius*=50000;
+		
+			if(location_circle){
+				location_circle.remove();
+				location_circle=null;
+			}
+			var circle=L.circle(coords, {color: 'red',"radius": radius*scale2,opacity:0.5}).bindTooltip("your location").addTo(map);
+			console.log(circle);
+			location_circle = circle;
+		}
+		if (navigator.geolocation) {
+			navigator.geolocation.watchPosition(logPosition);
+		} else {
+			 alert("Geolocation is not supported by this browser.");
+		}
+		
+		
 	}
-	
-	
-	/*geo_to_tile(): translate geo location coordinates to tile map coordinates */
 	
 	/* debug function */
 	var print_markers=  function(){
 		console.log(markers);
-	}
+	};
     
 	return { initModule: initModule,
 			load_floor: load_floor,
@@ -515,5 +757,7 @@ var AzrieliMap = function(){
 			marker_icon:marker_icon,
 			map:map,
             change_lang:change_lang,
+			watch_location:watch_location,
            log:log};
 }();
+$(document).ready(AzrieliMap.initModule('en'));
