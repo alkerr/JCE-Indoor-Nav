@@ -716,40 +716,13 @@ var AzrieliMap = function(){
     };
 	
 	var watch_location = function(){
-		var logPosition = function(p){
-			$("#txt").empty();
+		var drawPosition = function(p){
 			console.log("logging p..");
 			console.log(p);
-			var acc = p.coords.accuracy-200;
-			if(acc<0)
-				acc*=-1;
-			else
-				acc=1;
-			console.log();
-			console.log("ACC = "+acc);
-			$("#txt").append("ACC = "+acc+"  accuracy = "+p.coords.accuracy+" LATEST");
-			var radius = 4*(acc/10);
-			coords=GeoService.gpsToMap(p.coords.latitude,p.coords.longitude,current_floor);
-			console.log(coords);
-
-			var scale2=Math.abs(Math.cos(coords.lat*Math.PI/180));
-			console.log("scale2= "+scale2);
-			radius*=50000;
-		
-			if(location_circle){
-				location_circle.remove();
-				location_circle=null;
-			}
-			radius*=scale2;
-			console.log("radius= "+radius)
-			var circle=L.circle(coords, {color: 'red',"radius":radius ,opacity:0.5}).bindTooltip("your location").addTo(map);
-			console.log(circle);
-			location_circle = circle;
-			map.setView([coords.lat,coords.lng],4);
-			
+            GeoService.drawUser(p.coords.latitude,p.coords.longitude,current_floor,p.coords.accuracy);
 		}
 		if (navigator.geolocation) {
-			navigator.geolocation.watchPosition(logPosition);
+			navigator.geolocation.watchPosition(drawPosition);
 		} else {
 			 alert("Geolocation is not supported by this browser.");
 		}
