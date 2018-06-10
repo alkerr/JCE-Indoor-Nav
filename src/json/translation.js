@@ -189,7 +189,10 @@ var english = {
 	'David Avishi: Industrial & Management Laboratories Manager':'David Avishi: Industrial & Management Laboratories Manager',
 	'Ana Graph: Electricity and Electronics Laboratories Manager':'Ana Graph: Electricity and Electronics Laboratories Manager',
 	'Navigate':'Navigate',
-	'More Info':'More Info'
+	'More Info':'More Info',
+    'Up to floor':'Up to floor',
+    'Down to floor':'Down to floor',
+    'Destination':'Destination'
 };
 
 var hebrew = {
@@ -382,7 +385,10 @@ var hebrew = {
 	'David Avishi: Industrial & Management Laboratories Manager':'דוד אבישי -  מנהל מעבדת תעשייה וניהול / מעבדת תעשייה וניהול',
 	'Ana Graph: Electricity and Electronics Laboratories Manager':'אנה גרף מנהלת מעבדת אלקטרוניקה',
 	'Navigate':'נווט',
-	'More Info':'עוד מידע'
+	'More Info':'עוד מידע',
+    'Up to floor':'לעלות לקומה',
+    'Down to floor':'לרדת לקומה',
+    'Destination':'יַעַד'
 }
 var arabic = {
     'MAP':'خريطة',
@@ -574,5 +580,8 @@ var arabic = {
 	'David Avishi: Industrial & Management Laboratories Manager':'دافيد افيشاي  - مدير مختبر هندسة الصناعة والادارة  / مختبر هندسة الصناعة والادارة',
 	'Ana Graph: Electricity and Electronics Laboratories Manager':'آنا جيرف -  مديرة مختبر الالكترونيات',
 	'Navigate':'توجيه',
-	'More Info':'مزيد من المعلومات'
+	'More Info':'مزيد من المعلومات',
+    'Up to floor':'اصعد الى طابق',
+    'Down to floor':'انزل الى طابق',
+    'Destination':'الهدف'
 };

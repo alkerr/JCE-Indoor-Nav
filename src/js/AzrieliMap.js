@@ -34,7 +34,7 @@ var routingService = function(){
 }();
 
 
-
+var circle = null;//circle object to be drawn on the location , this object is used in other modules to get current location coords
 var GeoService = function () {
 
 	function getTileURL(lat, lon, zoom=8) {
@@ -211,7 +211,8 @@ var GeoService = function () {
 		var scale2=Math.abs(Math.cos(coods.lat*Math.PI/180));
 		radius*=50000;
 		
-		var circle=L.circle(coods, {color: 'red',"radius": radius*scale2,opacity:0.5}).bindTooltip("your location");
+		circle=L.circle(coods, {color: 'red',"radius": radius*scale2,opacity:0.5}).bindTooltip("your location");
+        console.log(circle);
 		group2.addLayer(circle);
 		
 		group2.addTo(map);
@@ -243,6 +244,7 @@ function rotate(cx, cy, x, y, angle) {
 
 /** used to translate the marker descriptions */
 var translate = function(lang,str){
+	console.log("lang = "+lang);
     var obj = null;
     if(lang == 'en'){
         obj = english;
@@ -287,9 +289,20 @@ var AzrieliMap = function(){
 		shadowAnchor: [22, 94]
 	});
 	
+    
+    var tooltip_icon = L.icon({ //icon object for the markers
+		iconUrl: 'img/tooltip.png',
+		iconSize: [0, 0],
+		iconAnchor: [22, 94],
+		popupAnchor: [-3, -76],
+		shadowSize: [68, 95],
+		shadowAnchor: [22, 94]
+	});
+    
 	var markers = []; //array of {obj:_ , coord:[_,_], floor:_} objects where obj is the leaflet marker object, coord is max zoom coordinates  and floor is floor number
 	
 	var tilelayer_options = {minZoom: 2, maxZoom:5, noWrap: false};//options object for tile layers
+    
 	
 	//floor tile layers array 
 	// 0 is floor-2, 1 is floor-1 etc..
@@ -300,13 +313,10 @@ var AzrieliMap = function(){
 	 L.tileLayer("maps/floor2/{z}/{x}/{y}.png",tilelayer_options),
 	 L.tileLayer("maps/floor3/{z}/{x}/{y}.png",tilelayer_options), ]
 
-	 
+    var invalid_location_layer = L.tileLayer("img/invalid.jpg",{minZoom: 2, maxZoom:5});
+    var invalid_location_f = false;
 
 	//---------------------------------- [FUNCTIONS] -----------------------------------------------------------
-    
-    var log = function(str){
-        console.log(str);
-    }
     
     var change_lang = function(l){
         if(l == 'en')
@@ -320,7 +330,12 @@ var AzrieliMap = function(){
     var on_mark_click = function(e){
         var marker = e.target;
         if (tooltip!=null && L.stamp(e.originalEvent.target) === L.stamp(tooltip._container)) {
-            console.log("navigate to "+ marker.options.title);
+            console.log("navigate to ");
+            console.log(marker);
+            var destination_id = GeoService.getClosestIndex(marker._latlng.lat ,marker._latlng.lng, current_floor );
+            var current_location_id = 1;
+            AzrieliMap.navigate(current_location_id,destination_id);
+            AzrieliMap.follow_mode_on();
         } 
         else{
             if(tooltip != null)
@@ -334,16 +349,15 @@ var AzrieliMap = function(){
     
     
 	/* mark(): draws a marker and adds it to the markers[] array*/
-	var mflag = 0; //set to 1 when zoomed in to add the markers - this flag is used to zoom back out to previous zoom in update_markers
-	var prev_zoom = 2;// holds the previous zoom when adding a marker
 	var mark = function(x,y,floor,title){
 		if(arguments.length != 4 || typeof x != "number" || typeof y != "number" || typeof floor != "number" || typeof title != "string" || map == null ){
 			console.log("mark() arguments error:"+typeof title);
 			return;
 		}
-		prev_zoom = map._zoom;
+        if(invalid_location_f == true)
+            return;
 		//map.setView([x,y],5);
-		mflag =1;
+
 		var marker = L.marker([x,y],{icon:marker_icon,title:title});
         marker.on("click",on_mark_click);
 		markers[markers.length] = {obj:marker,coord:[x,y],floor:floor,title:title}
@@ -355,12 +369,9 @@ var AzrieliMap = function(){
 
 	/*update_markers(): updates markers[] array coordinates according to zoom level*/
 	var update_markers = function(){
-		if(map == null)
+		if(map == null || invalid_location_f==true)
 			return;
-		if(mflag == 1){
-			map.setZoom(prev_zoom);
-			mflag = 0;
-		}
+
 		var delta_x, delta_y;
 		if(map._zoom == 5){
 			delta_x = 0;
@@ -411,12 +422,14 @@ var AzrieliMap = function(){
 		mark all destinations for every floor
 		[MISSING] get user location and set view to user location
 	*/
+    var follow_mode = true;
 	var initModule = function(l){
         lang = l;
 		var bounds = L.latLngBounds([-80, -80], [80, 60]);
-		map=L.map("map").setView([0,0],2);
+		map=L.map("map");
 		map.setMaxBounds(bounds);
 		load_floor(0);
+        //watch_location();
 		map.on('zoomend', update_markers);
 		updateDestinations(destinations);
         
@@ -425,14 +438,24 @@ var AzrieliMap = function(){
                 tooltip.remove();
                 tooltip = null;
             }
+            console.log("click event fired!");
         });
+        
+
+        
+        map.on("drag", function () {
+          follow_mode = false;
+        });
+        
+  
+       
 	};
 	
 	
 	/* updateDestinations():
 		marks every destination on the map from the JSON object*/
 	var updateDestinations = function(JSON_DATA){
-		if(arguments.length != 1 || map == null)
+		if(arguments.length != 1 || map == null || invalid_location_f==true)
 			return;
         
         map.setView([0,0],5);
@@ -467,6 +490,8 @@ var AzrieliMap = function(){
 	var floor2_path = []; //holds path coordinates for floor 2
 	var floor3_path = []; //holds path coordinates for floor 3
 	var update_path = function(prev_floor){
+        if(invalid_location_f == true)
+            return;
 		//remove all current polylines from prev_floor
 		var i;
 		if(prev_floor == -2){
@@ -537,7 +562,7 @@ var AzrieliMap = function(){
 	/* draw_path(): 
 		fills in path coordinates for the given waypoints for each floor then calls update_path() which draws the path for the current floor(expects to be given an array of waypoints [{x,y,z}])*/
 	var draw_path = function(path){
-		if(map==null || arguments.length != 1)
+		if(map==null || arguments.length != 1 || invalid_location_f==true)
 			return;
 		//resetting previous path
 		for(i=0; i<floorm2_path.length; i++)
@@ -676,10 +701,11 @@ var AzrieliMap = function(){
 		if a path exists , removes current polyline and updates path via update_path()
 	*/
 	var load_floor = function(f){
-		if(typeof f != "number" || map==null ){
-			console.log("f not a number or map is null");
+		if(typeof f != "number" || map==null || invalid_location_f==true){
 			return;
 		}
+        if(tooltip != null)
+            tooltip.remove();
 		if(f<-2 || f>3)
 			f=-2;
 		var prev_floor = -2;
@@ -705,24 +731,153 @@ var AzrieliMap = function(){
 		}
 		
 		update_path(prev_floor);
+        update_instructions();
 		
 	};
 	
 	
-	/*navigate(): draws a path with appropriate instructions for the user to navigate */
-    //expects from and to way points id
+	/*navigate(): calls draw_path() and builds instruction array for each floor then calls update_instructions() */
+    //expects from and to way points id's
+    var path = null;
+    var instructions = []; //array of {instruction:"", body:"", coords:[x,y], floor:"", tooltip:obj,marker:obj}
     var navigate = function(from, to){
+        if(invalid_location_f== true)
+            return;
+        
+        //removing old instructions
+        var i;
+        for(i=0; i<instructions.length; i++){
+            if(instructions[i].tooltip != null)
+                instructions[i].tooltip.remove();
+            if(instructions[i].marker != null)
+                instructions[i].marker.remove();
+        }
+        instructions = [];
+        
+        path = routingService.getRouteToDest(from,to);
+        draw_path(path);
+        console.log(path);
+        
+        for(i=0; i<path.length-1; i++){
+            if( path[i].z != path[i+1].z ){
+                var instruction;
+                if(path[i].z < path[i+1].z){
+                    instruction = "Up";
+                    var body = "";
+                    var j = i+1;
+                    while(j<path.length-1){
+                        if(path[j].z < path[j+1].z)
+                            j++
+                        else
+                            break;
+                    }
+                    if(j<path.length){
+                        instruction+=" to floor";
+                        body = " "+path[j].z+"<br>click";
+                    }
+                }
+                else{
+                    instruction = "Down";
+                    var j = i+1;
+                    while(j<path.length-1){
+                        if(path[j].z > path[j+1].z)
+                            j++
+                        else
+                            break;
+                    }
+                    if(j<path.length){
+                        instruction+=" to floor";
+                        body = " "+path[j].z+"<br>click";
+                    }
+                }
+                
+                console.log("adding instruction.."+instruction);
+                instructions[instructions.length] = {instruction:instruction,body:body,coords:[path[i].x,path[i].y] ,floor:path[i].z,tooltip:null,marker:null};
+            }
+        }
+        instructions[instructions.length] = {instruction:"Destination",body:"!",coords:[path[i].x,path[i].y] ,floor:path[i].z,tooltip:null,marker:null};
+        update_instructions();
         
     };
+    
+    var on_instruction_click = function(e){
+        var i;
+        for(i=0; i<instructions.length; i++){
+            tp = instructions[i].tooltip;
+            if (tp!=null && L.stamp(e.originalEvent.target) === L.stamp(tp._container)) {
+                //MISSING CHECK IF USER LOCATION IS IN RANGE
+                console.log(instructions[i]);
+                if(instructions[i].instruction.includes("Up") ){
+                    load_floor(current_floor+1);
+                }
+                else if(instructions[i].instruction.includes("Down") ){
+                   load_floor(current_floor-1);
+                }
+            }
+        }
+    }
+    
+    var update_instructions = function(){
+        var i;
+        //removing old instructions
+        for(i=0; i<instructions.length; i++){
+            if(instructions[i].tooltip != null)
+                instructions[i].tooltip.remove();
+            if(instructions[i].marker != null)
+                instructions[i].marker.remove();
+        }
+        
+        for(i=0; i<instructions.length; i++){
+            if(instructions[i].floor == current_floor){
+                var marker = L.marker(instructions[i].coords,{icon:tooltip_icon}).addTo(map);
+                var content = "";
+                if(lang == 'en'){
+                    console.log("english is picked");
+                    console.log("instruction = "+instructions[i].instruction);
+                    content = english[instructions[i].instruction]
+                    console.log("content = "+content);
+                }
+                else if(lang == 'ar'){
+                    content = arabic[instructions[i].instruction]
+                }
+                else if(lang == 'hb'){
+                    content = hebrew[instructions[i].instruction]
+                }
+                content+= instructions[i].body;
+                console.log("content after body = "+content);
+                var tp =L.tooltip({permanent:true,interactive:true},marker).setLatLng(instructions[i].coords).setContent(content).addTo(map);
+                marker.on("click",on_instruction_click);
+                marker.bindTooltip(tp);
+                instructions[i].tooltip = tp;
+                instructions[i].marker = marker;
+            }
+                
+        }
+        
+    }
 	
+    /*watch_location(): watches current geo location and draws a circle on the map using geoservice */
 	var watch_location = function(){
-		var drawPosition = function(p){
+		var handler = function(p){
 			console.log("logging p..");
 			console.log(p);
             GeoService.drawUser(p.coords.latitude,p.coords.longitude,current_floor,p.coords.accuracy);
+            if(circle._latlng.lat <-80 || circle._latlng.lng <-80 ||circle._latlng.lat > 80 || circle._latlng.lng > 60 ){
+                invalid_location_f=true;
+                console.log("invalid location");
+                invalid_location_layer.addTo(map);
+            }
+            else{
+                invalid_location_f = false;
+                invalid_location_layer.remove();
+                if(follow_mode == true){
+                    var coords = circle._latlng;
+                    map.setView([coords.lat,coords.lng],4);
+                }
+            }
 		}
 		if (navigator.geolocation) {
-			navigator.geolocation.watchPosition(drawPosition);
+			navigator.geolocation.watchPosition(handler);
 		} else {
 			 alert("Geolocation is not supported by this browser.");
 		}
@@ -731,19 +886,26 @@ var AzrieliMap = function(){
 	}
 	
 	/* debug function */
-	var print_markers=  function(){
-		console.log(markers);
+	var follow_mode_on=  function(){
+        if(circle ==  null)
+            return;
+		console.log("-- debug function begin -- setting follow_mode to true");
+        follow_mode = true;
+        var coords = circle._latlng;
+        map.setView([coords.lat,coords.lng],4);
+        console.log("-- debug function end --");
 	};
+    
     
 	return { initModule: initModule,
 			load_floor: load_floor,
-			mark:mark,
-			print_markers:print_markers,
+			follow_mode_on:follow_mode_on,
 			draw_path:draw_path,
 			marker_icon:marker_icon,
 			map:map,
             change_lang:change_lang,
 			watch_location:watch_location,
-           log:log};
+            navigate:navigate
+           };
 }();
-$(document).ready(function() {AzrieliMap.initModule(); AzrieliMap.watch_location();});
+//$(document).ready(function() {AzrieliMap.initModule('en');});

@@ -54,12 +54,12 @@ app.controller('router',function($scope,$translate,localStorageService){
     }
     
     
-    //checking local storage
-    var language = localStorageService.get("lang");
-    if(language == null){
-        $scope.page = "language.html";
-        $("#nav").hide();
-    }
+	//checking local storage
+	var language = localStorageService.get("lang");
+	if(language == null){
+		$scope.page = "language.html";
+		$("#nav").hide();
+	}
     else{
         $translate.use(language);
         if(language=="en"){
@@ -75,7 +75,7 @@ app.controller('router',function($scope,$translate,localStorageService){
     }
     
     
-    //functions for search
+   //functions for search
     $scope.openLeftMenu= function(){
         document.getElementById("map").style.opacity= "0.5";
         document.getElementById("leftMenu").style.display = "block";
@@ -85,9 +85,117 @@ app.controller('router',function($scope,$translate,localStorageService){
         document.getElementById("leftMenu").style.display = "none";
     }
     $scope.search = function(){
+        $("#srch_results").empty();
         console.log("searching..");
         console.log($('#srch').val());
+        if($('#srch').val() === ""){
+             $("#srch_results").append("<br/>what are you searching for?...");
+        }
+        else{
+            var srch = ($('#srch').val()).toLowerCase();
+            var res = [];
+            for(var i=0; i<destinations.floor0.length; i++){
+                var dest = destinations.floor0[i].name;
+                if(dest.toLowerCase().includes(srch)){
+                    res.push($translate.instant(destinations.floor0[i].name));
+                }
+                else{
+                    var s;
+                    for(s=0; s<destinations.floor0[i].services.length; s++){
+                        if(destinations.floor0[i].services[s].toLowerCase().includes(srch)){
+                            if(!res.includes($translate.instant(destinations.floor0[i].name)))
+                                res.push($translate.instant(destinations.floor0[i].name));
+                        }
+                    }
+                }
+            }
+            for(var i=0; i<destinations.floor1.length; i++){
+                var dest = destinations.floor1[i].name;
+                if(dest.toLowerCase().includes(srch)){
+                    res.push($translate.instant(destinations.floor1[i].name));
+                } 
+                else{
+                    var s;
+                    for(s=0; s<destinations.floor1[i].services.length; s++){
+                        if(destinations.floor1[i].services[s].toLowerCase().includes(srch)){
+                            if(!res.includes($translate.instant(destinations.floor1[i].name)))
+                                res.push($translate.instant(destinations.floor1[i].name));
+                        }
+                    }
+                }
+            }
+            for(var i=0; i<destinations.floor2.length; i++){
+                var dest = destinations.floor2[i].name;
+                if(dest.toLowerCase().includes(srch)){
+                    res.push($translate.instant(destinations.floor2[i].name));
+                }
+                else{
+                    var s;
+                    for(s=0; s<destinations.floor2[i].services.length; s++){
+                        if(destinations.floor2[i].services[s].toLowerCase().includes(srch)){
+                            if(!res.includes($translate.instant(destinations.floor2[i].name)))
+                                res.push($translate.instant(destinations.floor2[i].name));
+                        }
+                    }
+                }
+            }
+            for(var i=0; i<destinations.floor3.length; i++){
+                var dest = destinations.floor3[i].name;
+                if(dest.toLowerCase().includes(srch)){
+                    res.push($translate.instant(destinations.floor3[i].name));
+                }
+                else{
+                    var s;
+                    for(s=0; s<destinations.floor3[i].services.length; s++){
+                        if(destinations.floor3[i].services[s].toLowerCase().includes(srch)){
+                            if(!res.includes($translate.instant(destinations.floor3[i].name)))
+                                res.push($translate.instant(destinations.floor3[i].name));
+                        }
+                    }
+                }
+            }
+            for(var i=0; i<destinations.floorm1.length; i++){
+                var dest = destinations.floorm1[i].name;
+                if(dest.toLowerCase().includes(srch)){
+                    res.push($translate.instant(destinations.floorm1[i].name));
+                }
+                else{
+                    var s;
+                    for(s=0; s<destinations.floorm1[i].services.length; s++){
+                        if(destinations.floorm1[i].services[s].toLowerCase().includes(srch)){
+                            if(!res.includes($translate.instant(destinations.floorm1[i].name)))
+                                res.push($translate.instant(destinations.floorm1[i].name));
+                        }
+                    }
+                }
+            }
+            for(var i=0; i<destinations.floorm2.length; i++){
+                var dest = destinations.floorm2[i].name;
+                if(dest.toLowerCase().includes(srch)){
+                    res.push($translate.instant(destinations.floorm2[i].name));
+                }
+                else{
+                    var s;
+                    for(s=0; s<destinations.floorm2[i].services.length; s++){
+                        if(destinations.floorm2[i].services[s].toLowerCase().includes(srch)){
+                            if(!res.includes($translate.instant(destinations.floorm2[i].name)))
+                                res.push($translate.instant(destinations.floorm2[i].name));
+                        }
+                    }
+                }
+            }
+            if(res.length==0){
+                $("#srch_results").append("<br/>No Results Found");
+            }
+            else{
+                res.sort();
+                for(var i=0; i<res.length; i++){
+                    $("#srch_results").append("<br/>"+res[i]+ "<button> "+$translate.instant('More Info')+" </button><br/>");
+                }
+            }
+        }
     }
+    
     
     
     //functions for language page
@@ -112,6 +220,7 @@ app.controller('router',function($scope,$translate,localStorageService){
         $("#nav").show();
         $scope.load_map_page();
     };
+    
     
     
     //functions for menu page
