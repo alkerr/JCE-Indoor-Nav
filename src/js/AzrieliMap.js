@@ -280,14 +280,7 @@ var AzrieliMap = function(){
 	
 	var location_circle = null;
     
-	var marker_icon = L.icon({ //icon object for the markers
-		iconUrl: 'img/marker.png',
-		iconSize: [60, 60],
-		iconAnchor: [22, 94],
-		popupAnchor: [-3, -76],
-		shadowSize: [68, 95],
-		shadowAnchor: [22, 94]
-	});
+	var marker_icon = null;
 	
     
     var tooltip_icon = L.icon({ //icon object for the markers
@@ -306,12 +299,7 @@ var AzrieliMap = function(){
 	
 	//floor tile layers array 
 	// 0 is floor-2, 1 is floor-1 etc..
-	var layers = [L.tileLayer("maps/floor-2/{z}/{x}/{y}.png",tilelayer_options),
-	 L.tileLayer("maps/floor-1/{z}/{x}/{y}.png",tilelayer_options),
-	 L.tileLayer("maps/floor0/{z}/{x}/{y}.png",tilelayer_options),
-	 L.tileLayer("maps/floor1/{z}/{x}/{y}.png",tilelayer_options),
-	 L.tileLayer("maps/floor2/{z}/{x}/{y}.png",tilelayer_options),
-	 L.tileLayer("maps/floor3/{z}/{x}/{y}.png",tilelayer_options), ]
+	var layers = null;
 
     var invalid_location_layer = L.tileLayer("img/invalid.jpg",{minZoom: 2, maxZoom:5});
     var invalid_location_f = false;
@@ -424,6 +412,27 @@ var AzrieliMap = function(){
 	*/
     var follow_mode = true;
 	var initModule = function(l){
+        if(marker_icon == null){
+            marker_icon = L.icon({ //icon object for the markers
+                iconUrl: 'img/marker.png',
+                iconSize: [60, 60],
+                iconAnchor: [22, 94],
+                popupAnchor: [-3, -76],
+                shadowSize: [68, 95],
+                shadowAnchor: [22, 94]
+           });
+        }
+        
+        if(layers == null){
+            layers = [L.tileLayer("maps/floor-2/{z}/{x}/{y}.png",tilelayer_options),
+            L.tileLayer("maps/floor-1/{z}/{x}/{y}.png",tilelayer_options),
+            L.tileLayer("maps/floor0/{z}/{x}/{y}.png",tilelayer_options),
+            L.tileLayer("maps/floor1/{z}/{x}/{y}.png",tilelayer_options),
+            L.tileLayer("maps/floor2/{z}/{x}/{y}.png",tilelayer_options),
+            L.tileLayer("maps/floor3/{z}/{x}/{y}.png",tilelayer_options), ];
+        }
+        
+        $("#map_wrap").prepend('<div id = "map" style="height:90%;background:#888888; margin:0;"></div>');
         lang = l;
 		var bounds = L.latLngBounds([-80, -80], [80, 60]);
 		map=L.map("map");
@@ -693,6 +702,16 @@ var AzrieliMap = function(){
 		update_path(current_floor);
 	}
 
+    
+    var up = function(){
+        if(current_floor<3)
+            load_floor(current_floor+1);
+    }
+    
+    var down = function(){
+        if(current_floor>-2)
+            load_floor(current_floor-1);
+    }
 	
 	/*load_floor() : (default floor is -2)
 		removes current floor tilelayer
@@ -701,7 +720,9 @@ var AzrieliMap = function(){
 		if a path exists , removes current polyline and updates path via update_path()
 	*/
 	var load_floor = function(f){
-		if(typeof f != "number" || map==null || invalid_location_f==true){
+        console.log("loading floor "+f);
+		if(typeof f != "number" || map==null || invalid_location_f==true || isNaN(f)){
+            console.log("error loading");
 			return;
 		}
         if(tooltip != null)
@@ -715,8 +736,8 @@ var AzrieliMap = function(){
 		}
 		layers[f+2].addTo(map);
 		
-		current_floor=f;
-	
+        current_floor=f;
+        $("#floor").html(current_floor);
 		//removing all previous markers and loading new markers for the floor
 		var i;
 		for(i=0;i<markers.length;i++){
@@ -896,6 +917,20 @@ var AzrieliMap = function(){
         console.log("-- debug function end --");
 	};
     
+    var destroy = function(){
+        map.eachLayer(function (layer) {
+            map.removeLayer(layer);
+        });
+        markers = [];
+        map=null;
+        $("#map_wrap").empty();
+    }
+    
+    var isAlive = function(){
+        if(map == null)
+            return false;
+        return true;
+    }
     
 	return { initModule: initModule,
 			load_floor: load_floor,
@@ -903,9 +938,13 @@ var AzrieliMap = function(){
 			draw_path:draw_path,
 			marker_icon:marker_icon,
 			map:map,
+            up:up,
+            down:down,
             change_lang:change_lang,
 			watch_location:watch_location,
-            navigate:navigate
+            navigate:navigate,
+            destroy:destroy,
+            isAlive:isAlive
            };
 }();
 //$(document).ready(function() {AzrieliMap.initModule('en');});

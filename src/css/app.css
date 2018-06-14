@@ -35,6 +35,11 @@
     outline:none;
 }
 
+.button.small{
+    padding: 10px 20px;
+    font-size: 12px;
+}
+
 
 
 
@@ -80,4 +85,8 @@
     outline:0;
     width:100%;
     text-align:left;
+}
+
+#srch_results{
+    font-size: 18px;
 }

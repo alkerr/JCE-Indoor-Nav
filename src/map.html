@@ -6,10 +6,25 @@
     <br>
     <button class="button" ng-click="search()">{{'SEARCH'|translate}}</button>
     <div id="srch_results">
+        <div ng-repeat="item in res" id = "srch_results">
+            <br>
+            {{item.name|translate}}
+            <br>
+            <span ng-if="item.index>-1">
+                <button class="button small" id ="srch_info" ng-click="srch_minfo(item.floor,item.index)" >{{'More Info'|translate}}</button>
+                <button class="button small" id ="srch_nav" ng-click="srch_nav(item.x,item.y,item.floor)" class = "button small">{{'Navigate'|translate}}</button>
+                 <br>
+            </span>
+          
+           
+        </div>
     </div>
 </div>
 
 <button ng-click="openLeftMenu()" class="navbutton">&#128269;</button>
 
-<div id = "map" style="height:100%;background:#888888; margin:0;"></div>
-
+<div id = "map_wrap">
+    <button onclick="AzrieliMap.up()" class = "button small">{{'UP'|translate}}</button>
+    <button onclick="AzrieliMap.down()" class = "button small">{{'DOWN'|translate}}</button>
+    {{'Floor'|translate}}: <div id = "floor" style="display: inline-block;"></div>
+</div>
