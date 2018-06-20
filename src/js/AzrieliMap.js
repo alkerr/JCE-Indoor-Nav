@@ -207,7 +207,7 @@ var GeoService = function () {
 		
 		group2.clearLayers();
 		coods=gpsToMap(lat,lng,current_floor);
-
+        
 		var scale2=Math.abs(Math.cos(coods.lat*Math.PI/180));
 		radius*=50000;
 		
@@ -244,7 +244,6 @@ function rotate(cx, cy, x, y, angle) {
 
 /** used to translate the marker descriptions */
 var translate = function(lang,str){
-	console.log("lang = "+lang);
     var obj = null;
     if(lang == 'en'){
         obj = english;
@@ -269,6 +268,7 @@ Features:
 	-Multi floor maps, the map represents 1 floor at a time , the function load_floor() is used to switch between floors
 	-Destinations available marked on each floor
 	-Navigation path, the map draws a navigation path when given a set of valid way points through multi floor using the method draw_path()
+    -Location , the map uses the GeoService module and draws a circle of the user location
 */
 var map=null; //map object
 var AzrieliMap = function(){
@@ -280,7 +280,10 @@ var AzrieliMap = function(){
 	
 	var location_circle = null;
     
-	var marker_icon = null;
+	var marker_icon5 = null;
+    var marker_icon4 = null;
+    var marker_icon3 = null;
+    var marker_icon2 = null;
 	
     
     var tooltip_icon = L.icon({ //icon object for the markers
@@ -318,11 +321,17 @@ var AzrieliMap = function(){
     var on_mark_click = function(e){
         var marker = e.target;
         if (tooltip!=null && L.stamp(e.originalEvent.target) === L.stamp(tooltip._container)) {
-            console.log("navigate to ");
-            console.log(marker);
             var destination_id = GeoService.getClosestIndex(marker._latlng.lat ,marker._latlng.lng, current_floor );
-            var current_location_id = 1;
-            AzrieliMap.navigate(current_location_id,destination_id);
+            var current_location_id =1;
+            if(circle != null)
+                current_location_id = GeoService.getClosestIndex(circle._latlng.lat,circle._latlng.lng,current_floor);
+            if(marker.options.closest_wp != null){
+                var dest_id = marker.options.closest_wp;
+                AzrieliMap.navigate(current_location_id,dest_id,marker.options.title);
+            }
+            else{
+                AzrieliMap.navigate(current_location_id,destination_id,marker.options.title);
+            }
             AzrieliMap.follow_mode_on();
         } 
         else{
@@ -330,25 +339,25 @@ var AzrieliMap = function(){
                 tooltip.remove();
             
             var txt = translate(lang,marker.options.title);
-            tooltip = L.tooltip({permanent: true,interactive:true},marker).setLatLng([e.latlng.lat,e.latlng.lng]).setContent(txt+'<br>click to navigate').addTo(map);
+            var content = txt+'<br>click to navigate';
+            tooltip = L.tooltip({permanent: true,interactive:true,opacity:0.8},marker).setLatLng([e.latlng.lat,e.latlng.lng]).setContent(content).addTo(map);
             marker.bindTooltip(tooltip);
         }
     }
     
     
 	/* mark(): draws a marker and adds it to the markers[] array*/
-	var mark = function(x,y,floor,title){
-		if(arguments.length != 4 || typeof x != "number" || typeof y != "number" || typeof floor != "number" || typeof title != "string" || map == null ){
-			console.log("mark() arguments error:"+typeof title);
+	var mark = function(x,y,floor,title,closest_wp){
+		if(arguments.length != 5 || typeof x != "number" || typeof y != "number" || typeof floor != "number" || typeof title != "string" || map == null ){
 			return;
 		}
         if(invalid_location_f == true)
             return;
 		//map.setView([x,y],5);
-
-		var marker = L.marker([x,y],{icon:marker_icon,title:title});
+        
+		var marker = L.marker([x,y],{icon:marker_icon5,title:title,closest_wp:closest_wp});
         marker.on("click",on_mark_click);
-		markers[markers.length] = {obj:marker,coord:[x,y],floor:floor,title:title}
+		markers[markers.length] = {obj:marker,coord:[x,y],floor:floor,title:title,closest_wp:closest_wp}
 		if(current_floor == floor){
 			marker.addTo(map);
 		}
@@ -360,6 +369,60 @@ var AzrieliMap = function(){
 		if(map == null || invalid_location_f==true)
 			return;
 
+        for(i=0; i<markers.length; i++){
+			var x = markers[i].coord[0];
+			var y = markers[i].coord[1];
+			var title = markers[i].title;
+			var floor = markers[i].floor;
+            var closest_wp = markers[i].closest_wp;
+            
+            if(map._zoom == 5){
+                var new_marker = L.marker([x, y],{icon:marker_icon5,title:title,closest_wp:closest_wp});
+                new_marker.on("click",on_mark_click);
+                markers[i].obj.remove();
+                markers[i] = {obj:new_marker,coord:[x,y],floor:floor,title:title,closest_wp:closest_wp}
+
+                if(current_floor == floor){
+                    new_marker.addTo(map);
+                }
+            }
+            else if(map._zoom == 4){
+                var new_marker = L.marker([x, y],{icon:marker_icon4,title:title,closest_wp:closest_wp});
+                new_marker.on("click",on_mark_click);
+                markers[i].obj.remove();
+                markers[i] = {obj:new_marker,coord:[x,y],floor:floor,title:title,closest_wp:closest_wp}
+
+                if(current_floor == floor){
+                    new_marker.addTo(map);
+                }
+			
+            }
+            else if(map._zoom == 3){
+                var new_marker = L.marker([x, y],{icon:marker_icon3,title:title,closest_wp:closest_wp});
+                new_marker.on("click",on_mark_click);
+                markers[i].obj.remove();
+                markers[i] = {obj:new_marker,coord:[x,y],floor:floor,title:title,closest_wp:closest_wp}
+
+                if(current_floor == floor){
+                    new_marker.addTo(map);
+                }
+			
+            }
+            else if(map._zoom == 2){
+                var new_marker = L.marker([x, y],{icon:marker_icon2,title:title,closest_wp:closest_wp});
+                new_marker.on("click",on_mark_click);
+                markers[i].obj.remove();
+                markers[i] = {obj:new_marker,coord:[x,y],floor:floor,title:title,closest_wp:closest_wp}
+
+                if(current_floor == floor){
+                    new_marker.addTo(map);
+                }
+			
+            }
+			
+			
+        }
+        /*
 		var delta_x, delta_y;
 		if(map._zoom == 5){
 			delta_x = 0;
@@ -401,7 +464,8 @@ var AzrieliMap = function(){
 			if(current_floor == floor){
 				new_marker.addTo(map);
 			}
-		}
+        }
+        */
 	}
 	
 	
@@ -411,16 +475,33 @@ var AzrieliMap = function(){
 		[MISSING] get user location and set view to user location
 	*/
     var follow_mode = true;
+    var unfollow_mode_function = null;
 	var initModule = function(l){
-        if(marker_icon == null){
-            marker_icon = L.icon({ //icon object for the markers
+        if(marker_icon5 == null){
+            marker_icon5 = L.icon({ //icon object for the markers
                 iconUrl: 'img/marker.png',
-                iconSize: [60, 60],
-                iconAnchor: [22, 94],
-                popupAnchor: [-3, -76],
-                shadowSize: [68, 95],
-                shadowAnchor: [22, 94]
+                iconSize: [60, 60]
            });
+        }
+        if(marker_icon4 == null){
+            marker_icon4 = L.icon({ //icon object for the markers
+                iconUrl: 'img/marker.png',
+                iconSize: [50, 50]
+           });
+            
+        }
+        if(marker_icon3 == null){
+            marker_icon3 = L.icon({ //icon object for the markers
+                iconUrl: 'img/marker.png',
+                iconSize: [40, 40]
+           });
+        }
+        if(marker_icon2 == null){
+            marker_icon2 = L.icon({ //icon object for the markers
+                iconUrl: 'img/marker.png',
+                iconSize: [30, 30]
+           });
+            
         }
         
         if(layers == null){
@@ -432,13 +513,13 @@ var AzrieliMap = function(){
             L.tileLayer("maps/floor3/{z}/{x}/{y}.png",tilelayer_options), ];
         }
         
-        $("#map_wrap").prepend('<div id = "map" style="height:90%;background:#888888; margin:0;"></div>');
+        $("#map_wrap").prepend('<div id = "map" style="height:85%;background:#888888; margin:0;"></div>');
         lang = l;
-		var bounds = L.latLngBounds([-80, -80], [80, 60]);
-		map=L.map("map");
+		var bounds = L.latLngBounds([-80, -80], [80, 80]);
+		map=L.map("map",{attributionControl: false});
 		map.setMaxBounds(bounds);
 		load_floor(0);
-        //watch_location();
+       
 		map.on('zoomend', update_markers);
 		updateDestinations(destinations);
         
@@ -447,13 +528,15 @@ var AzrieliMap = function(){
                 tooltip.remove();
                 tooltip = null;
             }
-            console.log("click event fired!");
         });
         
-
+        watch_location();
         
         map.on("drag", function () {
-          follow_mode = false;
+            if(unfollow_mode_function!=null){
+                unfollow_mode_function();
+            }
+            follow_mode = false;
         });
         
   
@@ -470,22 +553,22 @@ var AzrieliMap = function(){
         map.setView([0,0],5);
 		var i;
 		for(i=0; i<JSON_DATA.floorm2.length; i++){
-			mark(JSON_DATA.floorm2[i].coord[0],JSON_DATA.floorm2[i].coord[1],-2,JSON_DATA.floorm2[i].name);
+			mark(JSON_DATA.floorm2[i].coord[0],JSON_DATA.floorm2[i].coord[1],-2,JSON_DATA.floorm2[i].name,JSON_DATA.floorm2[i].closest_waypoint);
 		}
 		for(i=0; i<JSON_DATA.floorm1.length; i++){
-			mark(JSON_DATA.floorm1[i].coord[0],JSON_DATA.floorm1[i].coord[1],-1,JSON_DATA.floorm1[i].name);
+			mark(JSON_DATA.floorm1[i].coord[0],JSON_DATA.floorm1[i].coord[1],-1,JSON_DATA.floorm1[i].name,JSON_DATA.floorm1[i].closest_waypoint);
 		}
 		for(i=0; i<JSON_DATA.floor0.length; i++){
-			mark(JSON_DATA.floor0[i].coord[0],JSON_DATA.floor0[i].coord[1],0,JSON_DATA.floor0[i].name);
+			mark(JSON_DATA.floor0[i].coord[0],JSON_DATA.floor0[i].coord[1],0,JSON_DATA.floor0[i].name,JSON_DATA.floor0[i].closest_waypoint);
 		}
 		for(i=0; i<JSON_DATA.floor1.length; i++){
-			mark(JSON_DATA.floor1[i].coord[0],JSON_DATA.floor1[i].coord[1],1,JSON_DATA.floor1[i].name);
+			mark(JSON_DATA.floor1[i].coord[0],JSON_DATA.floor1[i].coord[1],1,JSON_DATA.floor1[i].name,JSON_DATA.floor1[i].closest_waypoint);
 		}
 		for(i=0; i<JSON_DATA.floor2.length; i++){
-			mark(JSON_DATA.floor2[i].coord[0],JSON_DATA.floor2[i].coord[1],2,JSON_DATA.floor2[i].name);
+			mark(JSON_DATA.floor2[i].coord[0],JSON_DATA.floor2[i].coord[1],2,JSON_DATA.floor2[i].name,JSON_DATA.floor2[i].closest_waypoint);
 		}
 		for(i=0; i<JSON_DATA.floor3.length; i++){
-			mark(JSON_DATA.floor3[i].coord[0],JSON_DATA.floor3[i].coord[1],3,JSON_DATA.floor3[i].name);
+			mark(JSON_DATA.floor3[i].coord[0],JSON_DATA.floor3[i].coord[1],3,JSON_DATA.floor3[i].name,JSON_DATA.floor3[i].closest_waypoint);
 		}
 	}
 	
@@ -720,7 +803,6 @@ var AzrieliMap = function(){
 		if a path exists , removes current polyline and updates path via update_path()
 	*/
 	var load_floor = function(f){
-        console.log("loading floor "+f);
 		if(typeof f != "number" || map==null || invalid_location_f==true || isNaN(f)){
             console.log("error loading");
 			return;
@@ -750,7 +832,8 @@ var AzrieliMap = function(){
 				markers[i].obj.remove();
 			
 		}
-		
+		if(progress_path!=null)
+            progress_path.remove();
 		update_path(prev_floor);
         update_instructions();
 		
@@ -758,12 +841,16 @@ var AzrieliMap = function(){
 	
 	
 	/*navigate(): calls draw_path() and builds instruction array for each floor then calls update_instructions() */
-    //expects from and to way points id's
+    //expects from and to way points id's 
+    //when from or to are negative values , cancels all paths
     var path = null;
-    var instructions = []; //array of {instruction:"", body:"", coords:[x,y], floor:"", tooltip:obj,marker:obj}
-    var navigate = function(from, to){
+    var on_navigate = null; //a function given the title as a string
+    var instructions = []; //array of {instruction:"", body:"", coords:[x,y], floor:"", tooltip:obj,marker:obj}\
+    var navigation_active = false;
+    var navigate = function(from, to,title){
         if(invalid_location_f== true)
             return;
+        
         
         //removing old instructions
         var i;
@@ -774,10 +861,17 @@ var AzrieliMap = function(){
                 instructions[i].marker.remove();
         }
         instructions = [];
-        
+        if(from <0 || to<0){
+            draw_path([]);
+            navigation_active = false;
+            if(on_navigate != null)
+                on_navigate(null); //to notify nav is canceled
+            if(progress_path!=null)
+                progress_path.remove()
+            return;
+        }
         path = routingService.getRouteToDest(from,to);
         draw_path(path);
-        console.log(path);
         
         for(i=0; i<path.length-1; i++){
             if( path[i].z != path[i+1].z ){
@@ -812,13 +906,14 @@ var AzrieliMap = function(){
                     }
                 }
                 
-                console.log("adding instruction.."+instruction);
                 instructions[instructions.length] = {instruction:instruction,body:body,coords:[path[i].x,path[i].y] ,floor:path[i].z,tooltip:null,marker:null};
             }
         }
         instructions[instructions.length] = {instruction:"Destination",body:"!",coords:[path[i].x,path[i].y] ,floor:path[i].z,tooltip:null,marker:null};
         update_instructions();
-        
+        if(on_navigate != null)
+            on_navigate(title);
+        navigation_active=true;
     };
     
     var on_instruction_click = function(e){
@@ -827,7 +922,6 @@ var AzrieliMap = function(){
             tp = instructions[i].tooltip;
             if (tp!=null && L.stamp(e.originalEvent.target) === L.stamp(tp._container)) {
                 //MISSING CHECK IF USER LOCATION IS IN RANGE
-                console.log(instructions[i]);
                 if(instructions[i].instruction.includes("Up") ){
                     load_floor(current_floor+1);
                 }
@@ -853,10 +947,7 @@ var AzrieliMap = function(){
                 var marker = L.marker(instructions[i].coords,{icon:tooltip_icon}).addTo(map);
                 var content = "";
                 if(lang == 'en'){
-                    console.log("english is picked");
-                    console.log("instruction = "+instructions[i].instruction);
                     content = english[instructions[i].instruction]
-                    console.log("content = "+content);
                 }
                 else if(lang == 'ar'){
                     content = arabic[instructions[i].instruction]
@@ -865,7 +956,6 @@ var AzrieliMap = function(){
                     content = hebrew[instructions[i].instruction]
                 }
                 content+= instructions[i].body;
-                console.log("content after body = "+content);
                 var tp =L.tooltip({permanent:true,interactive:true},marker).setLatLng(instructions[i].coords).setContent(content).addTo(map);
                 marker.on("click",on_instruction_click);
                 marker.bindTooltip(tp);
@@ -876,25 +966,123 @@ var AzrieliMap = function(){
         }
         
     }
+    
+    /*update_path_progress(): draws path of current user progress depending on his location */
+    var update_path_progress = function(wp_index){
+        var arr = data['waypoints'];
+        var i,x,y;
+        for(i=0; i<arr.length; i++){
+            if(arr[i].id == wp_index){
+                x = arr[i].x;
+                y= arr[i].y;
+            }
+        }
+        var path = [];
+       
+        if(current_floor == -2 ){
+            var j;
+            for(j=0;j<floorm2_path.length;j++){
+                path = floorm2_path[j].path;
+                for(i=0; i<path.length; i++){
+                    if(path[i][0]==x && path[i][1]==y){
+                        draw_path_progress(path,i);
+                        return;
+                    }
+                }
+            }  
+        }
+        else if(current_floor == -1){
+            var j;
+            for(j=0;j<floorm1_path.length;j++){
+                path = floorm1_path[j].path;
+                for(i=0; i<path.length; i++){
+                    if(path[i][0]==x && path[i][1]==y){
+                        draw_path_progress(path,i);
+                        return;
+                    }
+                }
+            }  
+        }
+        else if(current_floor == 0){
+            var j;
+            for(j=0;j<floor0_path.length;j++){
+                path = floor0_path[j].path;
+                for(i=0; i<path.length; i++){
+                    if(path[i][0]==x && path[i][1]==y){
+                        draw_path_progress(path,i);
+                        return;
+                    }
+                }
+            }  
+        }
+        else if(current_floor == 1){
+            var j;
+            for(j=0;j<floor1_path_path.length;j++){
+                path = floor1_path[j].path;
+                for(i=0; i<path.length; i++){
+                    if(path[i][0]==x && path[i][1]==y){
+                        draw_path_progress(path,i);
+                        return;
+                    }
+                }
+            }  
+        }
+        else if(current_floor == 2){
+            var j;
+            for(j=0;j<floor2_path.length;j++){
+                path = floor2_path[j].path;
+                for(i=0; i<path.length; i++){
+                    if(path[i][0]==x && path[i][1]==y){
+                        draw_path_progress(path,i);
+                        return;
+                    }
+                }
+            }  
+        }
+        else if(current_floor == 3){
+            var j;
+            for(j=0;j<floor3_path.length;j++){
+                path = floor3_path[j].path;
+                for(i=0; i<path.length; i++){
+                    if(path[i][0]==x && path[i][1]==y){
+                        draw_path_progress(path,i);
+                        return;
+                    }
+                }
+            }  
+        }
+    }
 	
+    //draws blue progress path from the beginning till the 'last_wp_index'
+    var progress_path = null;
+    var draw_path_progress = function(originalPath, last_wp_index){
+        if(progress_path!=null)
+            progress_path.remove();
+        
+        new_path = originalPath.slice(0, last_wp_index+1);
+        progress_path =  L.polyline(new_path, {color: 'pink',weight:8}).addTo(map);
+        return originalPath;
+    }
+    
     /*watch_location(): watches current geo location and draws a circle on the map using geoservice */
 	var watch_location = function(){
 		var handler = function(p){
-			console.log("logging p..");
-			console.log(p);
             GeoService.drawUser(p.coords.latitude,p.coords.longitude,current_floor,p.coords.accuracy);
-            if(circle._latlng.lat <-80 || circle._latlng.lng <-80 ||circle._latlng.lat > 80 || circle._latlng.lng > 60 ){
+            if(circle._latlng.lat <-80 || circle._latlng.lng <-80 ||circle._latlng.lat > 80 || circle._latlng.lng > 80 ){
                 invalid_location_f=true;
                 console.log("invalid location");
-                invalid_location_layer.addTo(map);
+                //invalid_location_layer.addTo(map);
             }
             else{
                 invalid_location_f = false;
-                invalid_location_layer.remove();
+                //invalid_location_layer.remove();
                 if(follow_mode == true){
                     var coords = circle._latlng;
-                    map.setView([coords.lat,coords.lng],4);
+                    map.setView([coords.lat,coords.lng],3);
                 }
+                //update_path_progress with the index of the closest waypoint
+                if(navigation_active==true)
+                    update_path_progress(GeoService.getClosestIndex(circle._latlng.lat,circle._latlng.lng,current_floor));
             }
 		}
 		if (navigator.geolocation) {
@@ -907,14 +1095,15 @@ var AzrieliMap = function(){
 	}
 	
 	/* debug function */
+    var follow_mode_function = null
 	var follow_mode_on=  function(){
         if(circle ==  null)
             return;
-		console.log("-- debug function begin -- setting follow_mode to true");
         follow_mode = true;
         var coords = circle._latlng;
-        map.setView([coords.lat,coords.lng],4);
-        console.log("-- debug function end --");
+        map.setView([coords.lat,coords.lng],3);
+        if(follow_mode_function!=null)
+            follow_mode_function();
 	};
     
     var destroy = function(){
@@ -923,6 +1112,8 @@ var AzrieliMap = function(){
         });
         markers = [];
         map=null;
+        follow_mode_function=null;
+        unfollow_mode_function=null;
         $("#map_wrap").empty();
     }
     
@@ -932,18 +1123,48 @@ var AzrieliMap = function(){
         return true;
     }
     
+    var closest_index = function(){
+        if(circle != null)
+                return GeoService.getClosestIndex(circle._latlng.lat,circle._latlng.lng,current_floor);
+        return 1;
+    }
+    
+    var set_on_navigate = function(func){
+        on_navigate = func;
+    }
+    
+    var on_follow_mode = function(fun){
+        follow_mode_function = fun;
+    }
+    
+    var on_unfollow_mode = function(fun){
+        unfollow_mode_function= fun;
+    }
+    
+    var arrayToString = function(arr){
+        var i;
+        var str = "";
+        for(i=0;i<arr.length;i++){
+            str+= arr[i];
+            str+=", ";
+        }
+        return str;
+    }
+    
 	return { initModule: initModule,
 			load_floor: load_floor,
 			follow_mode_on:follow_mode_on,
-			draw_path:draw_path,
-			marker_icon:marker_icon,
 			map:map,
+            closest_index:closest_index,
             up:up,
             down:down,
             change_lang:change_lang,
 			watch_location:watch_location,
             navigate:navigate,
             destroy:destroy,
+            on_follow_mode:on_follow_mode,
+            on_unfollow_mode:on_unfollow_mode,
+            set_on_navigate:set_on_navigate,
             isAlive:isAlive
            };
 }();

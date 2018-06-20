@@ -1,21 +1,28 @@
 *{
-    font-size: 24px;
+    font-size: 20px;
+}
+#nav_info{
+    font-size:15px;
 }
 #main{
-    height:80%;
+    height:90%;
     text-align: center;
     overflow:auto;
 }
 
 #nav{
-    height:20%;
+    height:10%;
     text-align: center;
+}
+
+.selectpicker{
+    font-size: 20px;
 }
 
 .button {
     outline: none;
-    padding: 15px 25px;
-    font-size: 24px;
+    padding: 10px 20px;
+    font-size: 20px;
     text-align: center;
     cursor: pointer;
     outline: none;
@@ -23,7 +30,7 @@
     background: linear-gradient(-90deg,#FA1E1E,#CF1D1D);
     border: none;
     border-radius: 15px;
-    box-shadow: 0 9px #999;
+    box-shadow: 0 7px #999;
 }
 
 .button:active {
@@ -36,12 +43,54 @@
 }
 
 .button.small{
-    padding: 10px 20px;
-    font-size: 12px;
+    box-shadow: 0 4px #999;
+    padding: 10px 10px;
+    font-size: 10px;
 }
 
 
+.menu_button{
+    outline: none;
+    font-size: 19px;
+    padding: 5px 5px;
+    text-align: center;
+    cursor: pointer;
+    outline: none;
+    color: white;
+    background: linear-gradient(-90deg,#FA1E1E,#CF1D1D);
+    border: none;
+    border-radius: 5px;
+}
 
+.menu_button:focus{
+    border-style: solid;
+    border-color: black;
+    outline:none;
+}
+
+.picked{
+    border-style: solid;
+    border-color: black;
+    outline:none;
+}
+
+.menu_tab{
+    overflow: hidden;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+}
+
+table, tr, td,th {
+    font-size:15px;
+    
+    width:50%;
+    height:10%;
+}
+
+td{
+    border-style: hidden solid solid hidden;
+    border-color: #FA1E1E;
+}
 
 #cmd_dest{
     border-style: solid;
@@ -87,6 +136,16 @@
     text-align:left;
 }
 
+
+
 #srch_results{
     font-size: 18px;
+}
+
+.undermap{
+    background-color:#e3e3e3;
+}
+
+#leftMenu{
+
 }

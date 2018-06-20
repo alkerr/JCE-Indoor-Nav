@@ -1,7 +1,45 @@
+ /* //fetch destinations.js from firebase 
+ var config = {
+    apiKey: "AIzaSyBlxfM3IXXsy1qU8gW_nJy0W_oWQFM5DK8",
+    authDomain: "azsrchtester2.firebaseapp.com",
+    databaseURL: "https://azsrchtester2.firebaseio.com",
+    projectId: "azsrchtester2",
+    storageBucket: "azsrchtester2.appspot.com",
+    messagingSenderId: "709578488524"
+};
+firebase.initializeApp(config);
+
+var dest_ref = firebase.storage().refFromURL('CLOUD LOCATION URL');
+console.log(dest_ref);
+dest_ref.child('DATA_FILE_NAME').getDownloadURL().then(function(url) {
+
+console.log(url);
+console.log("done");
+// This can be downloaded directly:
+var xhr = new XMLHttpRequest();
+xhr.responseType = 'blob';
+xhr.onload = function(event) {
+var blob = xhr.response;
+};
+xhr.open('GET', url);
+xhr.send();
+
+// Or inserted into an <img> element:
+var dest = document.getElementById('dest_script');
+dest.src = url;
+}).catch(function(error) {
+      // Handle any errors
+    console.log("-- ERROR --");
+    console.log(error);
+});
+
+*/
+
 /*AngularJS App Module */
-var app =angular.module('app',  ['pascalprecht.translate','LocalStorageModule']);
+var app =angular.module('app',  ['pascalprecht.translate','LocalStorageModule','firebase']);
 
 app.controller('router',function($scope,$translate,localStorageService){
+    $("#nav_info").hide();
     //functions for nav
     $(document).ready(function() {  
         $('.selectpicker').change($scope.langChanged);
@@ -9,14 +47,34 @@ app.controller('router',function($scope,$translate,localStorageService){
     
     $scope.map_loaded = false;
     
+    
+    //functions for map load
+    var show_follow_button = function(){
+        $("#cmd_follow").show();
+    }
+    var hide_follow_button = function(){
+        $("#cmd_follow").hide();
+    }
+    var update_nav_info = function(title){
+        $("#nav_info").empty();
+        if(title == null){
+            $("#nav_info").hide();
+            return;
+        }
+        $("#nav_info").append($translate.instant('NAV_TO')+$translate.instant(title)+'  ');
+        $("#nav_info").append('<button onclick="AzrieliMap.navigate(-1,-1)" class="button small">'+$translate.instant('Cancel')+'</button>');
+        $("#nav_info").show();
+    }
+    
     $scope.load_map_page = function(){
         $scope.res = [];
-        console.log("loading map");
         $scope.page = "map.html";
-        console.log("calling init");
-         setTimeout(function(){
+        setTimeout(function(){
             AzrieliMap.initModule(localStorageService.get("lang"));
             $scope.map_loaded = true;
+            AzrieliMap.on_follow_mode(hide_follow_button);
+            AzrieliMap.on_unfollow_mode(show_follow_button);
+            AzrieliMap.set_on_navigate(update_nav_info);
          }, 1000);;
         $("#cmd_map").hide();
         $("#cmd_menu").show();
@@ -24,15 +82,20 @@ app.controller('router',function($scope,$translate,localStorageService){
     $scope.load_menu_page = function(){
         if(AzrieliMap.isAlive())
             AzrieliMap.destroy();
+        $(".menu_tab").show();
+        $scope.more_info = {};
+        $scope.menu_list = [];
         $scope.map_loaded = false;
         $scope.page = "menu.html";
         
-        $("#menu_dest_lst").show();
-        $("#menu_dest_view").empty();
-        $("#menu_cmd_nav").hide();
         
         $("#cmd_menu").hide();
         $("#cmd_map").show();
+        
+        $("#cmd_office").removeClass("picked");
+        $("#cmd_class").removeClass("picked");
+        $("#cmd_other").removeClass("picked");
+        $("#cmd_lab").removeClass("picked");
      }
 
     $scope.getPage = function(){
@@ -41,7 +104,6 @@ app.controller('router',function($scope,$translate,localStorageService){
     
     $scope.langChanged = function(){
         var lang = $(".selectpicker").val();
-        console.log("picked: "+lang);
         if(lang == "English"){
             $translate.use("en");
             localStorageService.set("lang","en");
@@ -57,7 +119,6 @@ app.controller('router',function($scope,$translate,localStorageService){
             localStorageService.set("lang","hb");
             AzrieliMap.change_lang('hb');
         }
-        console.log("value: "+localStorageService.get("lang"));
     }
     
     
@@ -105,8 +166,6 @@ app.controller('router',function($scope,$translate,localStorageService){
     $scope.search = function(){
         //$("#srch_results").empty();
         $scope.res=[];
-        console.log("searching..");
-        console.log($('#srch').val());
         if($('#srch').val() === ""){
             $scope.res.push({name:"what are you searching for?...",index:-1});
         }
@@ -118,7 +177,8 @@ app.controller('router',function($scope,$translate,localStorageService){
                 if(dest.toLowerCase().includes(srch)){
                     var x = destinations.floor0[i].coord[0];
                     var y = destinations.floor0[i].coord[1];
-                    $scope.res.push({name:destinations.floor0[i].name,floor:0,index:i,x:x,y:y});
+                    var cwp = destinations.floor0[i].closest_waypoint;
+                    $scope.res.push({name:destinations.floor0[i].name,floor:0,index:i,x:x,y:y,cwp:cwp});
                 }
                 else{
                     var s;
@@ -127,7 +187,8 @@ app.controller('router',function($scope,$translate,localStorageService){
                             if(!name_in_result(destinations.floor0[i].name)){
                                 var x = destinations.floor0[i].coord[0];
                                 var y = destinations.floor0[i].coord[1];
-                                $scope.res.push({name:destinations.floor0[i].name,floor:0,index:i,x:x,y:y});
+                                var cwp = destinations.floor0[i].closest_waypoint;
+                                $scope.res.push({name:destinations.floor0[i].name,floor:0,index:i,x:x,y:y,cwp:cwp});
                             }
                         }
                     }
@@ -138,7 +199,8 @@ app.controller('router',function($scope,$translate,localStorageService){
                 if(dest.toLowerCase().includes(srch)){
                     var x = destinations.floor1[i].coord[0];
                     var y = destinations.floor1[i].coord[1];
-                    $scope.res.push({name:destinations.floor1[i].name,floor:1,index:i,x:x,y:y});
+                    var cwp = destinations.floor1[i].closest_waypoint;
+                    $scope.res.push({name:destinations.floor1[i].name,floor:1,index:i,x:x,y:y,cwp:cwp});
                 } 
                 else{
                     var s;
@@ -147,7 +209,8 @@ app.controller('router',function($scope,$translate,localStorageService){
                             if(!name_in_result(destinations.floor1[i].name)){
                                 var x = destinations.floor1[i].coord[0];
                                 var y = destinations.floor1[i].coord[1];
-                                $scope.res.push({name:destinations.floor1[i].name,floor:1,index:i,x:x,y:y});
+                                var cwp = destinations.floor1[i].closest_waypoint;
+                                $scope.res.push({name:destinations.floor1[i].name,floor:1,index:i,x:x,y:y,cwp:cwp});
                             }
                                 
                         }
@@ -159,7 +222,8 @@ app.controller('router',function($scope,$translate,localStorageService){
                 if(dest.toLowerCase().includes(srch)){
                     var x = destinations.floor2[i].coord[0];
                     var y = destinations.floor2[i].coord[1];
-                    $scope.res.push({name:destinations.floor2[i].name,floor:2,index:i,x:x,y:y});
+                    var cwp = destinations.floor2[i].closest_waypoint;
+                    $scope.res.push({name:destinations.floor2[i].name,floor:2,index:i,x:x,y:y,cwp:cwp});
                 }
                 else{
                     var s;
@@ -168,7 +232,8 @@ app.controller('router',function($scope,$translate,localStorageService){
                             if(!name_in_result(destinations.floor2[i].name)){
                                 var x = destinations.floor2[i].coord[0];
                                 var y = destinations.floor2[i].coord[1];
-                                $scope.res.push({name:destinations.floor2[i].name,floor:2,index:i,x:x,y:y});
+                                var cwp = destinations.floor2[i].closest_waypoint;
+                                $scope.res.push({name:destinations.floor2[i].name,floor:2,index:i,x:x,y:y,cwp:cwp});
                             }
                         }
                     }
@@ -179,7 +244,8 @@ app.controller('router',function($scope,$translate,localStorageService){
                 if(dest.toLowerCase().includes(srch)){
                     var x = destinations.floor3[i].coord[0];
                     var y = destinations.floor3[i].coord[1];
-                    $scope.res.push({name:destinations.floor3[i].name,floor:3,index:i,x:x,y:y});
+                    var cwp = destinations.floor3[i].closest_waypoint;
+                    $scope.res.push({name:destinations.floor3[i].name,floor:3,index:i,x:x,y:y,cwp:cwp});
                 }
                 else{
                     var s;
@@ -188,7 +254,8 @@ app.controller('router',function($scope,$translate,localStorageService){
                             if(!name_in_result(destinations.floor3[i].name)){
                                 var x = destinations.floor3[i].coord[0];
                                 var y = destinations.floor3[i].coord[1];
-                                $scope.res.push({name:destinations.floor3[i].name,floor:3,index:i,x:x,y:y});
+                                var cwp = destinations.floor3[i].closest_waypoint;
+                                $scope.res.push({name:destinations.floor3[i].name,floor:3,index:i,x:x,y:y,cwp:cwp});
                             }
                         }
                     }
@@ -199,7 +266,8 @@ app.controller('router',function($scope,$translate,localStorageService){
                 if(dest.toLowerCase().includes(srch)){
                     var x = destinations.floorm1[i].coord[0];
                     var y = destinations.floorm1[i].coord[1];
-                    $scope.res.push({name:destinations.floorm1[i].name,floor:-1,index:i,x:x,y:y});
+                    var cwp = destinations.floorm1[i].closest_waypoint;
+                    $scope.res.push({name:destinations.floorm1[i].name,floor:-1,index:i,x:x,y:y,cwp:cwp});
                 }
                 else{
                     var s;
@@ -208,7 +276,8 @@ app.controller('router',function($scope,$translate,localStorageService){
                             if(!name_in_result(destinations.floorm1[i].name)){
                                 var x = destinations.floorm1[i].coord[0];
                                 var y = destinations.floorm1[i].coord[1];
-                                $scope.res.push({name:destinations.floorm1[i].name,floor:-1,index:i,x:x,y:y});
+                                var cwp = destinations.floorm1[i].closest_waypoint;
+                                $scope.res.push({name:destinations.floorm1[i].name,floor:-1,index:i,x:x,y:y,cwp:cwp});
                             }
                         }
                     }
@@ -219,7 +288,8 @@ app.controller('router',function($scope,$translate,localStorageService){
                 if(dest.toLowerCase().includes(srch)){
                     var x = destinations.floorm2[i].coord[0];
                     var y = destinations.floorm2[i].coord[1];
-                    $scope.res.push({name:destinations.floorm2[i].name,floor:-2,index:i,x:x,y:y});
+                    var cwp = destinations.floorm2[i].closest_waypoint;
+                    $scope.res.push({name:destinations.floorm2[i].name,floor:-2,index:i,x:x,y:y,cwp:cwp});
                 }
                 else{
                     var s;
@@ -228,7 +298,8 @@ app.controller('router',function($scope,$translate,localStorageService){
                             if(!name_in_result(destinations.floorm2[i].name)){
                                 var x = destinations.floorm2[i].coord[0];
                                 var y = destinations.floorm2[i].coord[1];
-                                $scope.res.push({name:destinations.floorm2[i].name,floor:-2,index:i,x:x,y:y});
+                                var cwp = destinations.floorm2[i].closest_waypoint;
+                                $scope.res.push({name:destinations.floorm2[i].name,floor:-2,index:i,x:x,y:y,cwp:cwp});
                             }
                         }
                     }
@@ -244,20 +315,23 @@ app.controller('router',function($scope,$translate,localStorageService){
                 }*/
             }
         }
-        console.log($scope.res);
     }
     
-    $scope.srch_minfo = function(floor,index){
+    $scope.srch_minfo = function(floor,index,x,y,hrs){
         $scope.load_menu_page();
         setTimeout(function(){
-            $scope.view_dest(floor,index);
-         }, 500);;
+            $scope.view_dest(floor,index,x,y,hrs);
+         }, 1000);;
         
     }
     
-    $scope.srch_nav = function(x,y,f){
+    $scope.srch_nav = function(x,y,f,title,cwp){
         var dest_id =  GeoService.getClosestIndex(x,y,f);
-        AzrieliMap.navigate(1,dest_id);
+        if(cwp != null){
+            AzrieliMap.navigate(AzrieliMap.closest_index(),cwp,title);
+        }
+        else
+            AzrieliMap.navigate(AzrieliMap.closest_index(),dest_id,title);
         $scope.closeLeftMenu();
         
     }
@@ -286,45 +360,185 @@ app.controller('router',function($scope,$translate,localStorageService){
         $scope.load_map_page();
     };
     
-    
+    $scope.destinations=destinations;
+    var get_menu_list = function(type){
+        var list =[];
+        var i;
+        var data = destinations.floorm2;
+        for(i=0;i<data.length;i++){
+            if(data[i].type == type){   
+                list.push({name:data[i].name,floor:-2,index:i,x:data[i].coord[0],y:data[i].coord[1],cwp:data[i].closest_waypoint,hrs:data[i].hours});
+            }
+        }
+        
+        data = destinations.floorm1;
+        for(i=0;i<data.length;i++){
+            if(data[i].type == type){
+                list.push({name:data[i].name,floor:-1,index:i,x:data[i].coord[0],y:data[i].coord[1],cwp:data[i].closest_waypoint,hrs:data[i].hours});
+            }
+        }
+        
+        data = destinations.floor0;
+        for(i=0;i<data.length;i++){
+            if(data[i].type == type){
+                list.push({name:data[i].name,floor:0,index:i,x:data[i].coord[0],y:data[i].coord[1],cwp:data[i].closest_waypoint,hrs:data[i].hours});
+            }
+        }
+        
+        data = destinations.floor1;
+        for(i=0;i<data.length;i++){
+            if(data[i].type == type){
+                list.push({name:data[i].name,floor:1,index:i,x:data[i].coord[0],y:data[i].coord[1],cwp:data[i].closest_waypoint,hrs:data[i].hours});
+            }
+        }
+        
+        data = destinations.floor2;
+        for(i=0;i<data.length;i++){
+            if(data[i].type == type){
+                list.push({name:data[i].name,floor:2,index:i,x:data[i].coord[0],y:data[i].coord[1],cwp:data[i].closest_waypoint,hrs:data[i].hours});
+            }
+        }
+        
+        data = destinations.floor3;
+        for(i=0;i<data.length;i++){
+            if(data[i].type == type){
+                list.push({name:data[i].name,floor:3,index:i,x:data[i].coord[0],y:data[i].coord[1],cwp:data[i].closest_waypoint,hrs:data[i].hours});
+            }
+        }
+        return list;
+    }
     
     //functions for menu page
-    $scope.destinations=destinations;
-    $scope.view_dest = function(floor,index){
-        console.log("VIEW DEST()");
-        $("#menu_dest_lst").hide();
-        $("#menu_cmd_nav").show();
+    $scope.menu_list = []; //array of {name:"",floor:f,index:i,x:x,y:y}
+    $scope.on_class_click = function(){
+        $("#cmd_office").removeClass("picked");
+        $("#cmd_lab").removeClass("picked");
+        $("#cmd_other").removeClass("picked");
+        $("#cmd_class").addClass("picked");
+        $scope.menu_list = get_menu_list("classroom");
+    }
+    $scope.on_office_click = function(){
+        $("#cmd_office").addClass("picked");
+        $("#cmd_class").removeClass("picked"); 
+        $("#cmd_lab").removeClass("picked");
+        $("#cmd_other").removeClass("picked");
+        $scope.menu_list = get_menu_list("office");
+    }
+    $scope.on_lab_click = function(){
+        $("#cmd_office").removeClass("picked");
+        $("#cmd_class").removeClass("picked");
+        $("#cmd_other").removeClass("picked");
+        $("#cmd_lab").addClass("picked");
+        $scope.menu_list = get_menu_list("lab");
+    }
+    $scope.on_other_click = function(){
+        $("#cmd_office").removeClass("picked");
+        $("#cmd_lab").removeClass("picked");
+        $("#cmd_class").removeClass("picked");
+        $("#cmd_other").addClass("picked");
+        $scope.menu_list = get_menu_list("other");
+    }
+   
+    var get_more_info = function(data,index,floor,hrs){
+        if(index>=data.length)
+            return;
+        
+        var arr = [];
+        arr.push(data[index].name);
+        if(hrs!= null && hrs.length>0){
+            arr.push("Hours:");
+            arr.push(hrs)
+            arr.push("\n");
+        }
+        arr.push("In Floor "+floor);
+        arr.push("\n");
+        var i;
+        for(i=0; i<data[index].services.length;i++){
+            arr.push(data[index].services[i]);
+        }
+        return arr;
+    }
+    $scope.more_info = {}; // object of {strings:[],floor:f,x:x,y:y,name:n,hrs:h}
+    $scope.view_dest = function(floor,index,x,y,hrs){
+        $(".menu_tab").hide();
+        var name = null;
+        var cwp = null;
+        var hrs = null
+        $scope.menu_list = [];
         if(floor==-2){
-            console.log(destinations.floorm2[index].name);
+            $scope.more_info.strings = get_more_info(destinations.floorm2,index,floor,hrs);
+            name = destinations.floorm2[index].name;
+            cwp = destinations.floorm2[index].closest_waypoint;
+            if(destinations.floorm2[index].hours)
+                hrs = '';
+            else
+                hrs = destinations.floorm2[index].hours;
         }
         else if(floor == -1){
-            console.log(destinations.floorm1[index].name);
-            
+            $scope.more_info.strings = get_more_info(destinations.floorm1,index,floor,hrs);
+            name = destinations.floorm1[index].name;
+            cwp = destinations.floorm1[index].closest_waypoint;
+            if(destinations.floorm1[index].hours)
+                hrs = '';
+            else
+                hrs = destinations.floorm1[index].hours;
         }
         else if(floor == 0){
-            $("#menu_dest_view").append($translate.instant(destinations.floor0[index].name));
-            $("#menu_dest_view").append("<br>");
-            var i;
-            for(i=0;i<destinations.floor0[index].services.length; i++){
-                
-                $("#menu_dest_view").append($translate.instant(destinations.floor0[index].services[i]));
-                $("#menu_dest_view").append("<br>");
-            }
-           
+           $scope.more_info.strings = get_more_info(destinations.floor0,index,floor,hrs);
+            name = destinations.floor0[index].name;
+            cwp = destinations.floor0[index].closest_waypoint;
+            if(destinations.floor0[index].hours)
+                hrs = '';
+            else
+                hrs = destinations.floor0[index].hours;
         }
         else if(floor == 1){
-            console.log(destinations.floor1[index].name);
+            $scope.more_info.strings = get_more_info(destinations.floor1,index,floor,hrs);
+            name = destinations.floor1[index].name;
+            cwp = destinations.floor1[index].closest_waypoint;
+            if(destinations.floor1[index].hours)
+                hrs = '';
+            else
+                hrs = destinations.floor1[index].hours;
         }
         else if(floor == 2){
-            console.log(destinations.floor2[index].name);
+            $scope.more_info.strings = get_more_info(destinations.floor2,index,floor,hrs);
+            name = destinations.floor2[index].name;
+            cwp = destinations.floor2[index].closest_waypoint;
+            if(destinations.floor2[index].hours)
+                hrs = '';
+            else
+                hrs = destinations.floor2[index].hours;
         }
         else if(floor == 3){
-            console.log(destinations.floor3[index].name);
+            $scope.more_info.strings = get_more_info(destinations.floor3,index,floor,hrs);
+            name = destinations.floor3[index].name;
+            cwp = destinations.floor3[index].closest_waypoint;
+            if(destinations.floor3[index].hours)
+                hrs = '';
+            else
+                hrs = destinations.floor3[index].hours;
         }
-        $("#cmd_map").hide();
+        $scope.more_info.name = name;
+        $scope.more_info.floor = floor;
+        $scope.more_info.x = x;
+        $scope.more_info.y = y;
+        $scope.more_info.cwp = cwp;
+        $scope.more_info.hrs = hrs;
         $("#cmd_menu").show();
     };
     
+    $scope.menu_nav = function(x,y,f,title,cwp){
+        $scope.more_info = {};
+        $scope.load_map_page();
+        setTimeout(function(){
+            while($scope.map_loaded!=true){
+            }
+            $scope.srch_nav(x,y,f,title,cwp);
+         }, 1000);;
+     
+        
+    }
     
 
  
