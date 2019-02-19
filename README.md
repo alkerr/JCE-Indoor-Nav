@@ -1,7 +1,7 @@
 # Introduction
 This repository holds the source code for a project in JCE software engineering course, the project is to develop an application used to navigate through the college campus, the organization which proposed this project is called [Israeli Hope](https://www.israeli-hope.gov.il/).
 <img align = "right" src = "https://www.israeli-hope.gov.il/sites/all/themes/fatfish_subtheme/logo.png" width = 30%>
-
+- [Visit our live version](https://azrieli-maps.firebaseapp.com/)
 
 
 # Iterations
